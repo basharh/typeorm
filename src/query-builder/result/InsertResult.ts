@@ -1,10 +1,9 @@
-import {ObjectLiteral} from "../../common/ObjectLiteral";
+import { ObjectLiteral } from "../../common/ObjectLiteral";
 
 /**
  * Result object returned by InsertQueryBuilder execution.
  */
 export class InsertResult {
-
     /**
      * Contains inserted entity id.
      * Has entity-like structure (not just column database name and values).
@@ -21,5 +20,4 @@ export class InsertResult {
      * Raw SQL result returned by executed query.
      */
     raw: any;
-
 }

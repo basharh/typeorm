@@ -4,7 +4,6 @@ import { EntitySchema } from "../entity-schema/EntitySchema";
  * Arguments for EntityRepositoryMetadata class, helps to construct an EntityRepositoryMetadata object.
  */
 export interface EntityRepositoryMetadataArgs {
-
     /**
      * Constructor of the custom entity repository.
      */
@@ -13,6 +12,5 @@ export interface EntityRepositoryMetadataArgs {
     /**
      * Entity managed by this custom repository.
      */
-    readonly entity?: Function|string|EntitySchema<any>;
-
+    readonly entity?: Function | string | EntitySchema<any>;
 }

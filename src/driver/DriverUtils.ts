@@ -1,11 +1,10 @@
 import { Driver } from "./Driver";
 import { shorten } from "../util/StringUtils";
 
-    /**
+/**
  * Common driver utility functions.
  */
 export class DriverUtils {
-
     // -------------------------------------------------------------------------
     // Public Static Methods
     // -------------------------------------------------------------------------
@@ -14,10 +13,13 @@ export class DriverUtils {
      * Normalizes and builds a new driver options.
      * Extracts settings from connection url and sets to a new options object.
      */
-    static buildDriverOptions(options: any, buildOptions?: { useSid: boolean }): any {
+    static buildDriverOptions(
+        options: any,
+        buildOptions?: { useSid: boolean }
+    ): any {
         if (options.url) {
             const parsedUrl = this.parseConnectionUrl(options.url);
-            let urlDriverOptions: any = {
+            const urlDriverOptions: any = {
                 type: parsedUrl.type,
                 host: parsedUrl.host,
                 username: parsedUrl.username,
@@ -45,10 +47,18 @@ export class DriverUtils {
      *
      * @return An alias allowing to select/transform the target `column`.
      */
-    static buildColumnAlias({ maxAliasLength }: Driver, alias: string, column: string): string {
+    static buildColumnAlias(
+        { maxAliasLength }: Driver,
+        alias: string,
+        column: string
+    ): string {
         const columnAliasName = alias + "_" + column;
 
-        if (maxAliasLength && maxAliasLength > 0 && columnAliasName.length > maxAliasLength)
+        if (
+            maxAliasLength &&
+            maxAliasLength > 0 &&
+            columnAliasName.length > maxAliasLength
+        )
             return alias.length > column.length
                 ? `${shorten(alias)}_${column}`
                 : `${alias}_${shorten(column)}`;
@@ -68,8 +78,10 @@ export class DriverUtils {
         const firstSlashes = url.indexOf("//");
         const preBase = url.substr(firstSlashes + 2);
         const secondSlash = preBase.indexOf("/");
-        const base = (secondSlash !== -1) ? preBase.substr(0, secondSlash) : preBase;
-        const afterBase = (secondSlash !== -1) ? preBase.substr(secondSlash + 1) : undefined;
+        const base =
+            secondSlash !== -1 ? preBase.substr(0, secondSlash) : preBase;
+        const afterBase =
+            secondSlash !== -1 ? preBase.substr(secondSlash + 1) : undefined;
 
         const lastAtSign = base.lastIndexOf("@");
         const usernameAndPassword = base.substr(0, lastAtSign);

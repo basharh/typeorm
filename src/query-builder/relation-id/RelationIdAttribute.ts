@@ -1,15 +1,14 @@
-import {RelationMetadata} from "../../metadata/RelationMetadata";
-import {QueryBuilderUtils} from "../QueryBuilderUtils";
-import {EntityMetadata} from "../../metadata/EntityMetadata";
-import {QueryExpressionMap} from "../QueryExpressionMap";
-import {SelectQueryBuilder} from "../SelectQueryBuilder";
-import {ObjectUtils} from "../../util/ObjectUtils";
+import { RelationMetadata } from "../../metadata/RelationMetadata";
+import { QueryBuilderUtils } from "../QueryBuilderUtils";
+import { EntityMetadata } from "../../metadata/EntityMetadata";
+import { QueryExpressionMap } from "../QueryExpressionMap";
+import { SelectQueryBuilder } from "../SelectQueryBuilder";
+import { ObjectUtils } from "../../util/ObjectUtils";
 
 /**
  * Stores all join relation id attributes which will be used to build a JOIN query.
  */
 export class RelationIdAttribute {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -32,7 +31,9 @@ export class RelationIdAttribute {
     /**
      * Extra condition applied to "ON" section of join.
      */
-    queryBuilderFactory?: (qb: SelectQueryBuilder<any>) => SelectQueryBuilder<any>;
+    queryBuilderFactory?: (
+        qb: SelectQueryBuilder<any>
+    ) => SelectQueryBuilder<any>;
 
     /**
      * Indicates if relation id should NOT be loaded as id map.
@@ -43,8 +44,10 @@ export class RelationIdAttribute {
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(private queryExpressionMap: QueryExpressionMap,
-                        relationIdAttribute?: Partial<RelationIdAttribute>) {
+    constructor(
+        private queryExpressionMap: QueryExpressionMap,
+        relationIdAttribute?: Partial<RelationIdAttribute>
+    ) {
         ObjectUtils.assign(this, relationIdAttribute || {});
     }
 
@@ -64,7 +67,9 @@ export class RelationIdAttribute {
      */
     get parentAlias(): string {
         if (!QueryBuilderUtils.isAliasProperty(this.relationName))
-            throw new Error(`Given value must be a string representation of alias property`);
+            throw new Error(
+                `Given value must be a string representation of alias property`
+            );
 
         return this.relationName.substr(0, this.relationName.indexOf("."));
     }
@@ -78,7 +83,9 @@ export class RelationIdAttribute {
      */
     get relationPropertyPath(): string {
         if (!QueryBuilderUtils.isAliasProperty(this.relationName))
-            throw new Error(`Given value must be a string representation of alias property`);
+            throw new Error(
+                `Given value must be a string representation of alias property`
+            );
 
         return this.relationName.substr(this.relationName.indexOf(".") + 1);
     }
@@ -90,12 +97,20 @@ export class RelationIdAttribute {
      */
     get relation(): RelationMetadata {
         if (!QueryBuilderUtils.isAliasProperty(this.relationName))
-            throw new Error(`Given value must be a string representation of alias property`);
+            throw new Error(
+                `Given value must be a string representation of alias property`
+            );
 
-        const relationOwnerSelection = this.queryExpressionMap.findAliasByName(this.parentAlias!);
-        const relation = relationOwnerSelection.metadata.findRelationWithPropertyPath(this.relationPropertyPath!);
+        const relationOwnerSelection = this.queryExpressionMap.findAliasByName(
+            this.parentAlias!
+        );
+        const relation = relationOwnerSelection.metadata.findRelationWithPropertyPath(
+            this.relationPropertyPath!
+        );
         if (!relation)
-            throw new Error(`Relation with property path ${this.relationPropertyPath} in entity was not found.`);
+            throw new Error(
+                `Relation with property path ${this.relationPropertyPath} in entity was not found.`
+            );
         return relation;
     }
 
@@ -122,5 +137,4 @@ export class RelationIdAttribute {
     get mapToPropertyPropertyPath(): string {
         return this.mapToProperty.substr(this.mapToProperty.indexOf(".") + 1);
     }
-
 }

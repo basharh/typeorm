@@ -1,11 +1,12 @@
-import {BaseConnectionOptions} from "../../connection/BaseConnectionOptions";
-import {CockroachConnectionCredentialsOptions} from "./CockroachConnectionCredentialsOptions";
+import { BaseConnectionOptions } from "../../connection/BaseConnectionOptions";
+import { CockroachConnectionCredentialsOptions } from "./CockroachConnectionCredentialsOptions";
 
 /**
  * Cockroachdb-specific connection options.
  */
-export interface CockroachConnectionOptions extends BaseConnectionOptions, CockroachConnectionCredentialsOptions {
-
+export interface CockroachConnectionOptions
+    extends BaseConnectionOptions,
+        CockroachConnectionCredentialsOptions {
     /**
      * Database type.
      */
@@ -20,7 +21,6 @@ export interface CockroachConnectionOptions extends BaseConnectionOptions, Cockr
      * Replication setup.
      */
     readonly replication?: {
-
         /**
          * Master server used by orm to perform writes.
          */
@@ -30,14 +30,11 @@ export interface CockroachConnectionOptions extends BaseConnectionOptions, Cockr
          * List of read-from severs (slaves).
          */
         readonly slaves: CockroachConnectionCredentialsOptions[];
-
     };
 
-
     /*
-    * Function handling errors thrown by drivers pool.
-    * Defaults to logging error with `warn` level.
+     * Function handling errors thrown by drivers pool.
+     * Defaults to logging error with `warn` level.
      */
     readonly poolErrorHandler?: (err: any) => any;
-
 }

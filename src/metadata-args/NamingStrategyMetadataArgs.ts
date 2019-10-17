@@ -2,7 +2,6 @@
  * Arguments for NamingStrategyMetadata class.
  */
 export interface NamingStrategyMetadataArgs {
-
     /**
      * Class to which this column is applied.
      */
@@ -12,5 +11,4 @@ export interface NamingStrategyMetadataArgs {
      * Strategy name.
      */
     readonly name: string;
-
 }

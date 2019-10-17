@@ -1,7 +1,14 @@
 /**
  * All types that entity listener can be.
  */
-export type EventListenerType = "after-load"|"before-insert"|"after-insert"|"before-update"|"after-update"|"before-remove"|"after-remove";
+export type EventListenerType =
+    | "after-load"
+    | "before-insert"
+    | "after-insert"
+    | "before-update"
+    | "after-update"
+    | "before-remove"
+    | "after-remove";
 
 /**
  * Provides a constants for each entity listener type.

@@ -1,7 +1,7 @@
-import {ColumnOptions, getMetadataArgsStorage} from "../../";
-import {PrimaryGeneratedColumnNumericOptions} from "../options/PrimaryGeneratedColumnNumericOptions";
-import {PrimaryGeneratedColumnUUIDOptions} from "../options/PrimaryGeneratedColumnUUIDOptions";
-import {GeneratedMetadataArgs} from "../../metadata-args/GeneratedMetadataArgs";
+import { ColumnOptions, getMetadataArgsStorage } from "../../";
+import { PrimaryGeneratedColumnNumericOptions } from "../options/PrimaryGeneratedColumnNumericOptions";
+import { PrimaryGeneratedColumnUUIDOptions } from "../options/PrimaryGeneratedColumnUUIDOptions";
+import { GeneratedMetadataArgs } from "../../metadata-args/GeneratedMetadataArgs";
 
 /**
  * Column decorator is used to mark a specific class property as a table column.
@@ -11,37 +11,56 @@ export function PrimaryGeneratedColumn(): Function;
 /**
  * Column decorator is used to mark a specific class property as a table column.
  */
-export function PrimaryGeneratedColumn(options: PrimaryGeneratedColumnNumericOptions): Function;
+export function PrimaryGeneratedColumn(
+    options: PrimaryGeneratedColumnNumericOptions
+): Function;
 
 /**
  * Column decorator is used to mark a specific class property as a table column.
  */
-export function PrimaryGeneratedColumn(strategy: "increment", options?: PrimaryGeneratedColumnNumericOptions): Function;
+export function PrimaryGeneratedColumn(
+    strategy: "increment",
+    options?: PrimaryGeneratedColumnNumericOptions
+): Function;
 
 /**
  * Column decorator is used to mark a specific class property as a table column.
  */
-export function PrimaryGeneratedColumn(strategy: "uuid", options?: PrimaryGeneratedColumnUUIDOptions): Function;
+export function PrimaryGeneratedColumn(
+    strategy: "uuid",
+    options?: PrimaryGeneratedColumnUUIDOptions
+): Function;
 
 /**
  * Column decorator is used to mark a specific class property as a table column.
  */
-export function PrimaryGeneratedColumn(strategy: "rowid", options?: PrimaryGeneratedColumnUUIDOptions): Function;
+export function PrimaryGeneratedColumn(
+    strategy: "rowid",
+    options?: PrimaryGeneratedColumnUUIDOptions
+): Function;
 
 /**
  * Column decorator is used to mark a specific class property as a table column.
  * Only properties decorated with this decorator will be persisted to the database when entity be saved.
  * This column creates an integer PRIMARY COLUMN with generated set to true.
  */
-export function PrimaryGeneratedColumn(strategyOrOptions?: "increment"|"uuid"|"rowid"|PrimaryGeneratedColumnNumericOptions|PrimaryGeneratedColumnUUIDOptions,
-                                       maybeOptions?: PrimaryGeneratedColumnNumericOptions|PrimaryGeneratedColumnUUIDOptions): Function {
-
+export function PrimaryGeneratedColumn(
+    strategyOrOptions?:
+        | "increment"
+        | "uuid"
+        | "rowid"
+        | PrimaryGeneratedColumnNumericOptions
+        | PrimaryGeneratedColumnUUIDOptions,
+    maybeOptions?:
+        | PrimaryGeneratedColumnNumericOptions
+        | PrimaryGeneratedColumnUUIDOptions
+): Function {
     // normalize parameters
     const options: ColumnOptions = {};
-    let strategy: "increment"|"uuid"|"rowid";
+    let strategy: "increment" | "uuid" | "rowid";
     if (strategyOrOptions) {
         if (typeof strategyOrOptions === "string")
-            strategy = strategyOrOptions as "increment"|"uuid"|"rowid";
+            strategy = strategyOrOptions as "increment" | "uuid" | "rowid";
 
         if (strategyOrOptions instanceof Object) {
             strategy = "increment";
@@ -50,11 +69,9 @@ export function PrimaryGeneratedColumn(strategyOrOptions?: "increment"|"uuid"|"r
     } else {
         strategy = "increment";
     }
-    if (maybeOptions instanceof Object)
-        Object.assign(options, maybeOptions);
+    if (maybeOptions instanceof Object) Object.assign(options, maybeOptions);
 
-    return function (object: Object, propertyName: string) {
-
+    return function(object: Record<string, any>, propertyName: string) {
         // if column type is not explicitly set then determine it based on generation strategy
         if (!options.type) {
             if (strategy === "increment") {

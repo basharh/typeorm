@@ -2,7 +2,6 @@
  * Database's table unique constraint options.
  */
 export interface TableUniqueOptions {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -16,5 +15,4 @@ export interface TableUniqueOptions {
      * Columns that contains this constraint.
      */
     columnNames: string[];
-
 }

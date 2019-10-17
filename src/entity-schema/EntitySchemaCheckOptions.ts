@@ -1,5 +1,4 @@
 export interface EntitySchemaCheckOptions {
-
     /**
      * Check constraint name.
      */
@@ -9,5 +8,4 @@ export interface EntitySchemaCheckOptions {
      * Check expression.
      */
     expression: string;
-
 }

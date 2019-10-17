@@ -9,5 +9,4 @@ export class DriverOptionNotSetError extends Error {
         Object.setPrototypeOf(this, DriverOptionNotSetError.prototype);
         this.message = `Driver option (${optionName}) is not set. Please set it to perform connection to the database.`;
     }
-
 }

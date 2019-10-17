@@ -1,5 +1,4 @@
 export interface EntitySchemaUniqueOptions {
-
     /**
      * Unique constraint name.
      */
@@ -8,6 +7,5 @@ export interface EntitySchemaUniqueOptions {
     /**
      * Unique column names.
      */
-    columns?: ((object?: any) => (any[]|{ [key: string]: number }))|string[];
-
+    columns?: ((object?: any) => any[] | { [key: string]: number }) | string[];
 }

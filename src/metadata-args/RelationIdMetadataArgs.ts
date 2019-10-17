@@ -1,9 +1,8 @@
-import {SelectQueryBuilder} from "../query-builder/SelectQueryBuilder";
+import { SelectQueryBuilder } from "../query-builder/SelectQueryBuilder";
 /**
  * Arguments for RelationIdMetadataArgs class.
  */
 export interface RelationIdMetadataArgs {
-
     /**
      * Class to which this decorator is applied.
      */
@@ -17,7 +16,7 @@ export interface RelationIdMetadataArgs {
     /**
      * Target's relation which it should count.
      */
-    readonly relation: string|((object: any) => any);
+    readonly relation: string | ((object: any) => any);
 
     /**
      * Alias of the joined (destination) table.
@@ -27,6 +26,7 @@ export interface RelationIdMetadataArgs {
     /**
      * Extra condition applied to "ON" section of join.
      */
-    readonly queryBuilderFactory?: (qb: SelectQueryBuilder<any>) => SelectQueryBuilder<any>;
-
+    readonly queryBuilderFactory?: (
+        qb: SelectQueryBuilder<any>
+    ) => SelectQueryBuilder<any>;
 }

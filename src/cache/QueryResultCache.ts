@@ -1,11 +1,10 @@
-import {QueryResultCacheOptions} from "./QueryResultCacheOptions";
-import {QueryRunner} from "../query-runner/QueryRunner";
+import { QueryResultCacheOptions } from "./QueryResultCacheOptions";
+import { QueryRunner } from "../query-runner/QueryRunner";
 
 /**
  * Implementations of this interface provide different strategies to cache query builder results.
  */
 export interface QueryResultCache {
-
     /**
      * Creates a connection with given cache provider.
      */
@@ -24,12 +23,19 @@ export interface QueryResultCache {
     /**
      * Caches given query result.
      */
-    getFromCache(options: QueryResultCacheOptions, queryRunner?: QueryRunner): Promise<QueryResultCacheOptions|undefined>;
+    getFromCache(
+        options: QueryResultCacheOptions,
+        queryRunner?: QueryRunner
+    ): Promise<QueryResultCacheOptions | undefined>;
 
     /**
      * Stores given query result in the cache.
      */
-    storeInCache(options: QueryResultCacheOptions, savedCache: QueryResultCacheOptions|undefined, queryRunner?: QueryRunner): Promise<void>;
+    storeInCache(
+        options: QueryResultCacheOptions,
+        savedCache: QueryResultCacheOptions | undefined,
+        queryRunner?: QueryRunner
+    ): Promise<void>;
 
     /**
      * Checks if cache is expired or not.
@@ -45,5 +51,4 @@ export interface QueryResultCache {
      * Removes all cached results by given identifiers from cache.
      */
     remove(identifiers: string[], queryRunner?: QueryRunner): Promise<void>;
-
 }

@@ -2,7 +2,6 @@
  * Database's table exclusion constraint options.
  */
 export interface TableExclusionOptions {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -16,5 +15,4 @@ export interface TableExclusionOptions {
      * Exclusion expression.
      */
     expression?: string;
-
 }

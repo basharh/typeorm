@@ -1,7 +1,7 @@
-import {Subject} from "../Subject";
-import {OrmUtils} from "../../util/OrmUtils";
-import {ObjectLiteral} from "../../common/ObjectLiteral";
-import {RelationMetadata} from "../../metadata/RelationMetadata";
+import { Subject } from "../Subject";
+import { OrmUtils } from "../../util/OrmUtils";
+import { ObjectLiteral } from "../../common/ObjectLiteral";
+import { RelationMetadata } from "../../metadata/RelationMetadata";
 
 /**
  * Builds operations needs to be executed for one-to-one non-owner relations of the given subjects.
@@ -15,13 +15,11 @@ import {RelationMetadata} from "../../metadata/RelationMetadata";
  *       make sure to reflect changes there as well.
  */
 export class OneToOneInverseSideSubjectBuilder {
-
     // ---------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------
 
-    constructor(protected subjects: Subject[]) {
-    }
+    constructor(protected subjects: Subject[]) {}
 
     // ---------------------------------------------------------------------
     // Public Methods
@@ -33,7 +31,6 @@ export class OneToOneInverseSideSubjectBuilder {
     build(): void {
         this.subjects.forEach(subject => {
             subject.metadata.oneToOneRelations.forEach(relation => {
-
                 // we don't need owning relations, this operation is only for inverse side of one-to-one relations
                 // skip relations for which persistence is disabled
                 if (relation.isOwning || relation.persistenceEnabled === false)
@@ -53,27 +50,36 @@ export class OneToOneInverseSideSubjectBuilder {
      *
      * by example: subject is "post" entity we are saving here and relation is "category" inside it here.
      */
-    protected buildForSubjectRelation(subject: Subject, relation: RelationMetadata) {
-
+    protected buildForSubjectRelation(
+        subject: Subject,
+        relation: RelationMetadata
+    ) {
         // prepare objects (relation id map) for the database entity
         // note: subject.databaseEntity contains relation with loaded relation id only (id map)
         // by example: since subject is a post, we are expecting to get post's category saved in the database here,
         //             particularly its relation id, e.g. category id stored in the database
-        let relatedEntityDatabaseRelationId: ObjectLiteral|undefined = undefined;
-        if (subject.databaseEntity) // related entity in the database can exist only if this entity (post) is saved
-            relatedEntityDatabaseRelationId = relation.getEntityValue(subject.databaseEntity);
+        let relatedEntityDatabaseRelationId:
+            | ObjectLiteral
+            | undefined = undefined;
+        if (subject.databaseEntity)
+            // related entity in the database can exist only if this entity (post) is saved
+            relatedEntityDatabaseRelationId = relation.getEntityValue(
+                subject.databaseEntity
+            );
 
         // get related entities of persisted entity
         // by example: get category from the passed to persist post entity
-        let relatedEntity: ObjectLiteral|null = relation.getEntityValue(subject.entity!); // by example: relatedEntity is a category here
-        if (relatedEntity === undefined) // if relation is undefined then nothing to update
+        const relatedEntity: ObjectLiteral | null = relation.getEntityValue(
+            subject.entity!
+        ); // by example: relatedEntity is a category here
+        if (relatedEntity === undefined)
+            // if relation is undefined then nothing to update
             return;
 
         // if related entity is null then we need to check if there a bind in the database and unset it
         // if there is no bind in the entity then we don't need to do anything
         // by example: if post.category = null and category has this post in the database then we unset it
         if (relatedEntity === null) {
-
             // it makes sense to update database only there is a previously set value in the database
             if (relatedEntityDatabaseRelationId) {
                 // todo: probably we can improve this in the future by finding entity with column those values,
@@ -85,10 +91,12 @@ export class OneToOneInverseSideSubjectBuilder {
                     parentSubject: subject,
                     canBeUpdated: true,
                     identifier: relatedEntityDatabaseRelationId,
-                    changeMaps: [{
-                        relation: relation.inverseRelation!,
-                        value: null
-                    }]
+                    changeMaps: [
+                        {
+                            relation: relation.inverseRelation!,
+                            value: null
+                        }
+                    ]
                 });
                 this.subjects.push(removedRelatedEntitySubject);
             }
@@ -98,11 +106,16 @@ export class OneToOneInverseSideSubjectBuilder {
 
         // extract only relation id from the related entities, since we only need it for comparision
         // by example: extract from category only relation id (category id, or let's say category title, depend on join column options)
-        let relationIdMap = relation.inverseEntityMetadata!.getEntityIdMap(relatedEntity); // by example: relationIdMap is category.id map here, e.g. { id: ... }
+        let relationIdMap = relation.inverseEntityMetadata!.getEntityIdMap(
+            relatedEntity
+        ); // by example: relationIdMap is category.id map here, e.g. { id: ... }
 
         // try to find a subject of this related entity, maybe it was loaded or was marked for persistence
         let relatedEntitySubject = this.subjects.find(operateSubject => {
-            return !!operateSubject.entity && operateSubject.entity === relatedEntity;
+            return (
+                !!operateSubject.entity &&
+                operateSubject.entity === relatedEntity
+            );
         });
 
         // if subject with entity was found take subject identifier as relation id map since it may contain extra properties resolved
@@ -114,7 +127,6 @@ export class OneToOneInverseSideSubjectBuilder {
         //             it means its always newly inserted and relation update operation always must be created for it
         //             it does not make sense to perform difference operation for it for both add and remove actions
         if (!relationIdMap) {
-
             // we decided to remove this error because it brings complications when saving object with non-saved entities
             // if related entity does not have a subject then it means user tries to bind entity which wasn't saved
             // in this persistence because he didn't pass this entity for save or he did not set cascades
@@ -123,8 +135,7 @@ export class OneToOneInverseSideSubjectBuilder {
             //     throw new Error(`One-to-one inverse relation "${relation.entityMetadata.name}.${relation.propertyPath}" contains ` +
             //         `entity which does not exist in the database yet, thus cannot be bind in the database. ` +
             //         `Please setup cascade insertion or save entity before binding it.`);
-            if (!relatedEntitySubject)
-                return;
+            if (!relatedEntitySubject) return;
 
             // okay, so related subject exist and its marked for insertion, then add a new change map
             // by example: this will tell category to insert into its post relation our post we are working with
@@ -139,7 +150,12 @@ export class OneToOneInverseSideSubjectBuilder {
 
         // check if this binding really exist in the database
         // by example: find our post if its already bind to category in the database and its not equal to what user tries to set
-        const areRelatedIdEqualWithDatabase = relatedEntityDatabaseRelationId && OrmUtils.deepCompare(relationIdMap, relatedEntityDatabaseRelationId);
+        const areRelatedIdEqualWithDatabase =
+            relatedEntityDatabaseRelationId &&
+            OrmUtils.deepCompare(
+                relationIdMap,
+                relatedEntityDatabaseRelationId
+            );
 
         // if they aren't equal it means its a new relation and we need to "bind" them
         // by example: this will tell category to insert into its post relation our post we are working with
@@ -147,7 +163,6 @@ export class OneToOneInverseSideSubjectBuilder {
         //             relation.inverseRelation is ManyToOne relation inside Category
         //             subject is Post needs to be inserted into Category
         if (!areRelatedIdEqualWithDatabase) {
-
             // if there is no relatedEntitySubject then it means "category" wasn't persisted,
             // but since we are going to update "category" table (since its an owning side of relation with join column)
             // we create a new subject here:
@@ -166,5 +181,4 @@ export class OneToOneInverseSideSubjectBuilder {
             });
         }
     }
-
 }

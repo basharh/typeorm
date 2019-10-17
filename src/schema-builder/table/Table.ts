@@ -1,19 +1,18 @@
-import {TableColumn} from "./TableColumn";
-import {TableIndex} from "./TableIndex";
-import {TableForeignKey} from "./TableForeignKey";
-import {Driver} from "../../driver/Driver";
-import {TableOptions} from "../options/TableOptions";
-import {EntityMetadata} from "../../metadata/EntityMetadata";
-import {TableUtils} from "../util/TableUtils";
-import {TableUnique} from "./TableUnique";
-import {TableCheck} from "./TableCheck";
-import {TableExclusion} from "./TableExclusion";
+import { TableColumn } from "./TableColumn";
+import { TableIndex } from "./TableIndex";
+import { TableForeignKey } from "./TableForeignKey";
+import { Driver } from "../../driver/Driver";
+import { TableOptions } from "../options/TableOptions";
+import { EntityMetadata } from "../../metadata/EntityMetadata";
+import { TableUtils } from "../util/TableUtils";
+import { TableUnique } from "./TableUnique";
+import { TableCheck } from "./TableCheck";
+import { TableExclusion } from "./TableExclusion";
 
 /**
  * Table in the database represented in this class.
  */
 export class Table {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -59,7 +58,7 @@ export class Table {
      * This is needed, for example to check if we need to skip primary keys creation
      * for new tables.
      */
-    justCreated: boolean = false;
+    justCreated = false;
 
     /**
      * Table engine.
@@ -75,22 +74,34 @@ export class Table {
             this.name = options.name;
 
             if (options.columns)
-                this.columns = options.columns.map(column => new TableColumn(column));
+                this.columns = options.columns.map(
+                    column => new TableColumn(column)
+                );
 
             if (options.indices)
-                this.indices = options.indices.map(index => new TableIndex(index));
+                this.indices = options.indices.map(
+                    index => new TableIndex(index)
+                );
 
             if (options.foreignKeys)
-                this.foreignKeys = options.foreignKeys.map(foreignKey => new TableForeignKey(foreignKey));
+                this.foreignKeys = options.foreignKeys.map(
+                    foreignKey => new TableForeignKey(foreignKey)
+                );
 
             if (options.uniques)
-                this.uniques = options.uniques.map(unique => new TableUnique(unique));
+                this.uniques = options.uniques.map(
+                    unique => new TableUnique(unique)
+                );
 
             if (options.checks)
-                this.checks = options.checks.map(check => new TableCheck(check));
+                this.checks = options.checks.map(
+                    check => new TableCheck(check)
+                );
 
             if (options.exclusions)
-                this.exclusions = options.exclusions.map(exclusion => new TableExclusion(exclusion));
+                this.exclusions = options.exclusions.map(
+                    exclusion => new TableExclusion(exclusion)
+                );
 
             if (options.justCreated !== undefined)
                 this.justCreated = options.justCreated;
@@ -124,7 +135,7 @@ export class Table {
             checks: this.checks.map(constraint => constraint.clone()),
             exclusions: this.exclusions.map(constraint => constraint.clone()),
             justCreated: this.justCreated,
-            engine: this.engine,
+            engine: this.engine
         });
     }
 
@@ -150,9 +161,10 @@ export class Table {
     addUniqueConstraint(uniqueConstraint: TableUnique): void {
         this.uniques.push(uniqueConstraint);
         if (uniqueConstraint.columnNames.length === 1) {
-            const uniqueColumn = this.columns.find(column => column.name === uniqueConstraint.columnNames[0]);
-            if (uniqueColumn)
-                uniqueColumn.isUnique = true;
+            const uniqueColumn = this.columns.find(
+                column => column.name === uniqueConstraint.columnNames[0]
+            );
+            if (uniqueColumn) uniqueColumn.isUnique = true;
         }
     }
 
@@ -160,13 +172,16 @@ export class Table {
      * Removes unique constraint.
      */
     removeUniqueConstraint(removedUnique: TableUnique): void {
-        const foundUnique = this.uniques.find(unique => unique.name === removedUnique.name);
+        const foundUnique = this.uniques.find(
+            unique => unique.name === removedUnique.name
+        );
         if (foundUnique) {
             this.uniques.splice(this.uniques.indexOf(foundUnique), 1);
             if (foundUnique.columnNames.length === 1) {
-                const uniqueColumn = this.columns.find(column => column.name === foundUnique.columnNames[0]);
-                if (uniqueColumn)
-                    uniqueColumn.isUnique = false;
+                const uniqueColumn = this.columns.find(
+                    column => column.name === foundUnique.columnNames[0]
+                );
+                if (uniqueColumn) uniqueColumn.isUnique = false;
             }
         }
     }
@@ -182,7 +197,9 @@ export class Table {
      * Removes check constraint.
      */
     removeCheckConstraint(removedCheck: TableCheck): void {
-        const foundCheck = this.checks.find(check => check.name === removedCheck.name);
+        const foundCheck = this.checks.find(
+            check => check.name === removedCheck.name
+        );
         if (foundCheck) {
             this.checks.splice(this.checks.indexOf(foundCheck), 1);
         }
@@ -199,7 +216,9 @@ export class Table {
      * Removes exclusion constraint.
      */
     removeExclusionConstraint(removedExclusion: TableExclusion): void {
-        const foundExclusion = this.exclusions.find(exclusion => exclusion.name === removedExclusion.name);
+        const foundExclusion = this.exclusions.find(
+            exclusion => exclusion.name === removedExclusion.name
+        );
         if (foundExclusion) {
             this.exclusions.splice(this.exclusions.indexOf(foundExclusion), 1);
         }
@@ -216,45 +235,56 @@ export class Table {
      * Removes foreign key.
      */
     removeForeignKey(removedForeignKey: TableForeignKey): void {
-        const fk = this.foreignKeys.find(foreignKey => foreignKey.name === removedForeignKey.name);
-        if (fk)
-            this.foreignKeys.splice(this.foreignKeys.indexOf(fk), 1);
+        const fk = this.foreignKeys.find(
+            foreignKey => foreignKey.name === removedForeignKey.name
+        );
+        if (fk) this.foreignKeys.splice(this.foreignKeys.indexOf(fk), 1);
     }
 
     /**
      * Adds index.
      */
-    addIndex(index: TableIndex, isMysql: boolean = false): void {
+    addIndex(index: TableIndex, isMysql = false): void {
         this.indices.push(index);
 
         // in Mysql unique indices and unique constraints are the same thing
         // if index is unique and have only one column, we mark this column as unique
         if (index.columnNames.length === 1 && index.isUnique && isMysql) {
-            const column = this.columns.find(c => c.name === index.columnNames[0]);
-            if (column)
-                column.isUnique = true;
+            const column = this.columns.find(
+                c => c.name === index.columnNames[0]
+            );
+            if (column) column.isUnique = true;
         }
     }
 
     /**
      * Removes index.
      */
-    removeIndex(tableIndex: TableIndex, isMysql: boolean = false): void {
-        const index = this.indices.find(index => index.name === tableIndex.name);
+    removeIndex(tableIndex: TableIndex, isMysql = false): void {
+        const index = this.indices.find(
+            index => index.name === tableIndex.name
+        );
         if (index) {
             this.indices.splice(this.indices.indexOf(index), 1);
 
             // in Mysql unique indices and unique constraints are the same thing
             // if index is unique and have only one column, we move `unique` attribute from its column
             if (index.columnNames.length === 1 && index.isUnique && isMysql) {
-                const column = this.columns.find(c => c.name === index.columnNames[0]);
+                const column = this.columns.find(
+                    c => c.name === index.columnNames[0]
+                );
                 if (column)
-                    column.isUnique = this.indices.some(ind => ind.columnNames.length === 1 && ind.columnNames[0] === column.name && !!index.isUnique);
+                    column.isUnique = this.indices.some(
+                        ind =>
+                            ind.columnNames.length === 1 &&
+                            ind.columnNames[0] === column.name &&
+                            !!index.isUnique
+                    );
             }
         }
     }
 
-    findColumnByName(name: string): TableColumn|undefined {
+    findColumnByName(name: string): TableColumn | undefined {
         return this.columns.find(column => column.name === name);
     }
 
@@ -263,7 +293,9 @@ export class Table {
      */
     findColumnIndices(column: TableColumn): TableIndex[] {
         return this.indices.filter(index => {
-           return !!index.columnNames.find(columnName => columnName === column.name);
+            return !!index.columnNames.find(
+                columnName => columnName === column.name
+            );
         });
     }
 
@@ -272,7 +304,9 @@ export class Table {
      */
     findColumnForeignKeys(column: TableColumn): TableForeignKey[] {
         return this.foreignKeys.filter(foreignKey => {
-            return !!foreignKey.columnNames.find(columnName => columnName === column.name);
+            return !!foreignKey.columnNames.find(
+                columnName => columnName === column.name
+            );
         });
     }
 
@@ -281,7 +315,9 @@ export class Table {
      */
     findColumnUniques(column: TableColumn): TableUnique[] {
         return this.uniques.filter(unique => {
-            return !!unique.columnNames.find(columnName => columnName === column.name);
+            return !!unique.columnNames.find(
+                columnName => columnName === column.name
+            );
         });
     }
 
@@ -290,7 +326,9 @@ export class Table {
      */
     findColumnChecks(column: TableColumn): TableCheck[] {
         return this.checks.filter(check => {
-            return !!check.columnNames!.find(columnName => columnName === column.name);
+            return !!check.columnNames!.find(
+                columnName => columnName === column.name
+            );
         });
     }
 
@@ -303,20 +341,31 @@ export class Table {
      */
     static create(entityMetadata: EntityMetadata, driver: Driver): Table {
         const options: TableOptions = {
-            name: driver.buildTableName(entityMetadata.tableName, entityMetadata.schema, entityMetadata.database),
+            name: driver.buildTableName(
+                entityMetadata.tableName,
+                entityMetadata.schema,
+                entityMetadata.database
+            ),
             engine: entityMetadata.engine,
             columns: entityMetadata.columns
                 .filter(column => column)
-                .map(column => TableUtils.createTableColumnOptions(column, driver)),
+                .map(column =>
+                    TableUtils.createTableColumnOptions(column, driver)
+                ),
             indices: entityMetadata.indices
                 .filter(index => index.synchronize === true)
                 .map(index => TableIndex.create(index)),
-            uniques: entityMetadata.uniques.map(unique => TableUnique.create(unique)),
-            checks: entityMetadata.checks.map(check => TableCheck.create(check)),
-            exclusions: entityMetadata.exclusions.map(exclusion => TableExclusion.create(exclusion)),
+            uniques: entityMetadata.uniques.map(unique =>
+                TableUnique.create(unique)
+            ),
+            checks: entityMetadata.checks.map(check =>
+                TableCheck.create(check)
+            ),
+            exclusions: entityMetadata.exclusions.map(exclusion =>
+                TableExclusion.create(exclusion)
+            )
         };
 
         return new Table(options);
     }
-
 }

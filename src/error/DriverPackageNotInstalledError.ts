@@ -9,5 +9,4 @@ export class DriverPackageNotInstalledError extends Error {
         Object.setPrototypeOf(this, DriverPackageNotInstalledError.prototype);
         this.message = `${driverName} package has not been found installed. Try to install it: npm install ${packageName} --save`;
     }
-
 }

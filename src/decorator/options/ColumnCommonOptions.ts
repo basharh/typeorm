@@ -1,10 +1,9 @@
-import {ValueTransformer} from "./ValueTransformer";
+import { ValueTransformer } from "./ValueTransformer";
 
 /**
  * Column options specific to all column types.
  */
 export interface ColumnCommonOptions {
-
     /**
      * Indicates if column is always selected by QueryBuilder and find operations.
      * Default value is "true".
@@ -26,7 +25,7 @@ export interface ColumnCommonOptions {
      * Specifies if this column will use auto increment (sequence, generated identity, rowid).
      * Note that in some databases only one column in entity can be marked as generated, and it must be a primary column.
      */
-    generated?: boolean|"increment"|"uuid"|"rowid";
+    generated?: boolean | "increment" | "uuid" | "rowid";
 
     /**
      * Specifies if column's value must be unique or not.
@@ -65,6 +64,5 @@ export interface ColumnCommonOptions {
      * Specifies a value transformer that is to be used to (un)marshal
      * this column when reading or writing to the database.
      */
-    transformer?: ValueTransformer|ValueTransformer[];
-
+    transformer?: ValueTransformer | ValueTransformer[];
 }

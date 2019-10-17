@@ -1,6 +1,6 @@
-import {createConnection} from "../index";
-import {Connection} from "../connection/Connection";
-import {ConnectionOptionsReader} from "../connection/ConnectionOptionsReader";
+import { createConnection } from "../index";
+import { Connection } from "../connection/Connection";
+import { ConnectionOptionsReader } from "../connection/ConnectionOptionsReader";
 import * as yargs from "yargs";
 const chalk = require("chalk");
 
@@ -9,7 +9,8 @@ const chalk = require("chalk");
  */
 export class SchemaDropCommand implements yargs.CommandModule {
     command = "schema:drop";
-    describe = "Drops all tables in the database on your default connection. " +
+    describe =
+        "Drops all tables in the database on your default connection. " +
         "To drop table of a concrete connection's database use -c option.";
 
     builder(args: yargs.Argv) {
@@ -27,15 +28,15 @@ export class SchemaDropCommand implements yargs.CommandModule {
     }
 
     async handler(args: yargs.Arguments) {
-
-        let connection: Connection|undefined = undefined;
+        let connection: Connection | undefined = undefined;
         try {
-
             const connectionOptionsReader = new ConnectionOptionsReader({
                 root: process.cwd(),
                 configName: args.config as any
             });
-            const connectionOptions = await connectionOptionsReader.get(args.connection as any);
+            const connectionOptions = await connectionOptionsReader.get(
+                args.connection as any
+            );
             Object.assign(connectionOptions, {
                 synchronize: false,
                 migrationsRun: false,
@@ -46,8 +47,9 @@ export class SchemaDropCommand implements yargs.CommandModule {
             await connection.dropDatabase();
             await connection.close();
 
-            console.log(chalk.green("Database schema has been successfully dropped."));
-
+            console.log(
+                chalk.green("Database schema has been successfully dropped.")
+            );
         } catch (err) {
             if (connection) await (connection as Connection).close();
 

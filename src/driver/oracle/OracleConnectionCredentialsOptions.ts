@@ -2,7 +2,6 @@
  * Oracle specific connection credential options.
  */
 export interface OracleConnectionCredentialsOptions {
-
     /**
      * Connection url where perform connection to.
      */
@@ -37,7 +36,7 @@ export interface OracleConnectionCredentialsOptions {
      * Connection SID.
      */
     readonly sid?: string;
-    
+
     /**
      * Embedded TNS Connection String
      */

@@ -9,5 +9,4 @@ export class MustBeEntityError extends Error {
         Object.setPrototypeOf(this, MustBeEntityError.prototype);
         this.message = `Cannot ${operation}, given value must be an entity, instead "${wrongValue}" is given.`;
     }
-
 }

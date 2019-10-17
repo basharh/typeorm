@@ -1,9 +1,9 @@
-import {FindOperator} from "../FindOperator";
+import { FindOperator } from "../FindOperator";
 
 /**
  * Find Options Operator.
  * Example: { someField: Any([...]) }
  */
-export function Any<T>(value: T[]|FindOperator<T>) {
+export function Any<T>(value: T[] | FindOperator<T>) {
     return new FindOperator("any", value as any);
 }

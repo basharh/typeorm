@@ -1,12 +1,11 @@
-import {EntityMetadata} from "./EntityMetadata";
-import {NamingStrategyInterface} from "../naming-strategy/NamingStrategyInterface";
-import {ExclusionMetadataArgs} from "../metadata-args/ExclusionMetadataArgs";
+import { EntityMetadata } from "./EntityMetadata";
+import { NamingStrategyInterface } from "../naming-strategy/NamingStrategyInterface";
+import { ExclusionMetadataArgs } from "../metadata-args/ExclusionMetadataArgs";
 
 /**
  * Exclusion metadata contains all information about table's exclusion constraints.
  */
 export class ExclusionMetadata {
-
     // ---------------------------------------------------------------------
     // Public Properties
     // ---------------------------------------------------------------------
@@ -19,7 +18,7 @@ export class ExclusionMetadata {
     /**
      * Target class to which metadata is applied.
      */
-    target?: Function|string;
+    target?: Function | string;
 
     /**
      * Exclusion expression.
@@ -43,8 +42,8 @@ export class ExclusionMetadata {
     // ---------------------------------------------------------------------
 
     constructor(options: {
-        entityMetadata: EntityMetadata,
-        args?: ExclusionMetadataArgs
+        entityMetadata: EntityMetadata;
+        args?: ExclusionMetadataArgs;
     }) {
         this.entityMetadata = options.entityMetadata;
 
@@ -64,8 +63,12 @@ export class ExclusionMetadata {
      * Must be called after all entity metadata's properties map, columns and relations are built.
      */
     build(namingStrategy: NamingStrategyInterface): this {
-        this.name = this.givenName ? this.givenName : namingStrategy.exclusionConstraintName(this.entityMetadata.tablePath, this.expression);
+        this.name = this.givenName
+            ? this.givenName
+            : namingStrategy.exclusionConstraintName(
+                  this.entityMetadata.tablePath,
+                  this.expression
+              );
         return this;
     }
-
 }

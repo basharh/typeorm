@@ -1,11 +1,10 @@
-import {TableExclusionOptions} from "../options/TableExclusionOptions";
-import {ExclusionMetadata} from "../../metadata/ExclusionMetadata";
+import { TableExclusionOptions } from "../options/TableExclusionOptions";
+import { ExclusionMetadata } from "../../metadata/ExclusionMetadata";
 
 /**
  * Database's table exclusion constraint stored in this class.
  */
 export class TableExclusion {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -39,7 +38,7 @@ export class TableExclusion {
     clone(): TableExclusion {
         return new TableExclusion(<TableExclusionOptions>{
             name: this.name,
-            expression: this.expression,
+            expression: this.expression
         });
     }
 
@@ -56,5 +55,4 @@ export class TableExclusion {
             expression: exclusionMetadata.expression
         });
     }
-
 }

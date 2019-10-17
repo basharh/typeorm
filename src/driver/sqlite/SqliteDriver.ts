@@ -1,18 +1,17 @@
-import {DriverPackageNotInstalledError} from "../../error/DriverPackageNotInstalledError";
-import {SqliteQueryRunner} from "./SqliteQueryRunner";
-import {DriverOptionNotSetError} from "../../error/DriverOptionNotSetError";
-import {PlatformTools} from "../../platform/PlatformTools";
-import {Connection} from "../../connection/Connection";
-import {SqliteConnectionOptions} from "./SqliteConnectionOptions";
-import {ColumnType} from "../types/ColumnTypes";
-import {QueryRunner} from "../../query-runner/QueryRunner";
-import {AbstractSqliteDriver} from "../sqlite-abstract/AbstractSqliteDriver";
+import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError";
+import { SqliteQueryRunner } from "./SqliteQueryRunner";
+import { DriverOptionNotSetError } from "../../error/DriverOptionNotSetError";
+import { PlatformTools } from "../../platform/PlatformTools";
+import { Connection } from "../../connection/Connection";
+import { SqliteConnectionOptions } from "./SqliteConnectionOptions";
+import { ColumnType } from "../types/ColumnTypes";
+import { QueryRunner } from "../../query-runner/QueryRunner";
+import { AbstractSqliteDriver } from "../sqlite-abstract/AbstractSqliteDriver";
 
 /**
  * Organizes communication with sqlite DBMS.
  */
 export class SqliteDriver extends AbstractSqliteDriver {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -56,21 +55,27 @@ export class SqliteDriver extends AbstractSqliteDriver {
     async disconnect(): Promise<void> {
         return new Promise<void>((ok, fail) => {
             this.queryRunner = undefined;
-            this.databaseConnection.close((err: any) => err ? fail(err) : ok());
+            this.databaseConnection.close((err: any) =>
+                err ? fail(err) : ok()
+            );
         });
     }
 
     /**
      * Creates a query runner used to execute database queries.
      */
-    createQueryRunner(mode: "master"|"slave" = "master"): QueryRunner {
-        if (!this.queryRunner)
-            this.queryRunner = new SqliteQueryRunner(this);
+    createQueryRunner(mode: "master" | "slave" = "master"): QueryRunner {
+        if (!this.queryRunner) this.queryRunner = new SqliteQueryRunner(this);
 
         return this.queryRunner;
     }
 
-    normalizeType(column: { type?: ColumnType, length?: number | string, precision?: number|null, scale?: number }): string {
+    normalizeType(column: {
+        type?: ColumnType;
+        length?: number | string;
+        precision?: number | null;
+        scale?: number;
+    }): string {
         if ((column.type as any) === Buffer) {
             return "blob";
         }
@@ -89,10 +94,13 @@ export class SqliteDriver extends AbstractSqliteDriver {
         await this.createDatabaseDirectory(this.options.database);
 
         const databaseConnection: any = await new Promise((ok, fail) => {
-            const connection = new this.sqlite.Database(this.options.database, (err: any) => {
-                if (err) return fail(err);
-                ok(connection);
-            });
+            const connection = new this.sqlite.Database(
+                this.options.database,
+                (err: any) => {
+                    if (err) return fail(err);
+                    ok(connection);
+                }
+            );
         });
 
         // Internal function to run a command on the connection and fail if an error occured.
@@ -123,7 +131,6 @@ export class SqliteDriver extends AbstractSqliteDriver {
     protected loadDependencies(): void {
         try {
             this.sqlite = PlatformTools.load("sqlite3").verbose();
-
         } catch (e) {
             throw new DriverPackageNotInstalledError("SQLite", "sqlite3");
         }
@@ -136,8 +143,9 @@ export class SqliteDriver extends AbstractSqliteDriver {
         return new Promise<void>((resolve, reject) => {
             const mkdirp = PlatformTools.load("mkdirp");
             const path = PlatformTools.load("path");
-            mkdirp(path.dirname(fullPath), (err: any) => err ? reject(err) : resolve());
+            mkdirp(path.dirname(fullPath), (err: any) =>
+                err ? reject(err) : resolve()
+            );
         });
     }
-
 }

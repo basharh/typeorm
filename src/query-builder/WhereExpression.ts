@@ -1,11 +1,10 @@
-import {ObjectLiteral} from "../common/ObjectLiteral";
-import {Brackets} from "./Brackets";
+import { ObjectLiteral } from "../common/ObjectLiteral";
+import { Brackets } from "./Brackets";
 
 /**
  * Query Builders can implement this interface to support where expression
  */
 export interface WhereExpression {
-
     /**
      * Sets WHERE condition in the query builder.
      * If you had previously WHERE expression defined,
@@ -90,7 +89,7 @@ export interface WhereExpression {
      * If you have multiple primary keys you need to pass object with property names and values specified,
      * for example [{ firstId: 1, secondId: 2 }, { firstId: 2, secondId: 3 }, ...]
      */
-    whereInIds(ids: any|any[]): this;
+    whereInIds(ids: any | any[]): this;
 
     /**
      * Adds new AND WHERE with conditions for the given ids.
@@ -100,7 +99,7 @@ export interface WhereExpression {
      * If you have multiple primary keys you need to pass object with property names and values specified,
      * for example [{ firstId: 1, secondId: 2 }, { firstId: 2, secondId: 3 }, ...]
      */
-    andWhereInIds(ids: any|any[]): this;
+    andWhereInIds(ids: any | any[]): this;
 
     /**
      * Adds new OR WHERE with conditions for the given ids.
@@ -110,7 +109,5 @@ export interface WhereExpression {
      * If you have multiple primary keys you need to pass object with property names and values specified,
      * for example [{ firstId: 1, secondId: 2 }, { firstId: 2, secondId: 3 }, ...]
      */
-    orWhereInIds(ids: any|any[]): this;
-
-
+    orWhereInIds(ids: any | any[]): this;
 }

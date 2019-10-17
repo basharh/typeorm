@@ -1,4 +1,4 @@
-import {Subject} from "../persistence/Subject";
+import { Subject } from "../persistence/Subject";
 
 /**
  * Thrown when operation is going to be executed on a subject without identifier.
@@ -11,8 +11,8 @@ export class SubjectWithoutIdentifierError extends Error {
     constructor(subject: Subject) {
         super();
         Object.setPrototypeOf(this, SubjectWithoutIdentifierError.prototype);
-        this.message = `Internal error. Subject ${subject.metadata.targetName} must have an identifier to perform operation. ` +
+        this.message =
+            `Internal error. Subject ${subject.metadata.targetName} must have an identifier to perform operation. ` +
             `Please report a github issue if you face this error.`;
     }
-
 }

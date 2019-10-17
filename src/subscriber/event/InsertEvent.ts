@@ -1,13 +1,12 @@
-import {EntityManager} from "../../entity-manager/EntityManager";
-import {Connection} from "../../connection/Connection";
-import {QueryRunner} from "../../query-runner/QueryRunner";
+import { EntityManager } from "../../entity-manager/EntityManager";
+import { Connection } from "../../connection/Connection";
+import { QueryRunner } from "../../query-runner/QueryRunner";
 import { EntityMetadata } from "../../metadata/EntityMetadata";
 
 /**
  * InsertEvent is an object that broadcaster sends to the entity subscriber when entity is inserted to the database.
  */
 export interface InsertEvent<Entity> {
-
     /**
      * Connection used in the event.
      */
@@ -34,5 +33,4 @@ export interface InsertEvent<Entity> {
      * Metadata of the entity.
      */
     metadata: EntityMetadata;
-
 }

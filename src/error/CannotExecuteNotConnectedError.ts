@@ -9,5 +9,4 @@ export class CannotExecuteNotConnectedError extends Error {
         Object.setPrototypeOf(this, CannotExecuteNotConnectedError.prototype);
         this.message = `Cannot execute operation on "${connectionName}" connection because connection is not yet established.`;
     }
-
 }

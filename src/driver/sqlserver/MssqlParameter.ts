@@ -4,7 +4,6 @@
  * @see https://github.com/patriksimek/node-mssql#data-types
  */
 export class MssqlParameter {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -17,11 +16,21 @@ export class MssqlParameter {
 
     constructor(value: any, type: "bit");
     constructor(value: any, type: "bigint");
-    constructor(value: any, type: "decimal", precision?: number, scale?: number);
+    constructor(
+        value: any,
+        type: "decimal",
+        precision?: number,
+        scale?: number
+    );
     constructor(value: any, type: "float");
     constructor(value: any, type: "int");
     constructor(value: any, type: "money");
-    constructor(value: any, type: "numeric", precision?: number, scale?: number);
+    constructor(
+        value: any,
+        type: "numeric",
+        precision?: number,
+        scale?: number
+    );
     constructor(value: any, type: "smallint");
     constructor(value: any, type: "smallmoney");
     constructor(value: any, type: "real");
@@ -51,5 +60,4 @@ export class MssqlParameter {
     constructor(public value: any, public type: string, ...params: number[]) {
         this.params = params || [];
     }
-
 }

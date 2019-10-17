@@ -1,15 +1,14 @@
-import {ObjectLiteral} from "../../common/ObjectLiteral";
-import {QueryRunnerAlreadyReleasedError} from "../../error/QueryRunnerAlreadyReleasedError";
-import {QueryFailedError} from "../../error/QueryFailedError";
-import {AbstractSqliteQueryRunner} from "../sqlite-abstract/AbstractSqliteQueryRunner";
-import {NativescriptDriver} from "./NativescriptDriver";
-import {Broadcaster} from "../../subscriber/Broadcaster";
+import { ObjectLiteral } from "../../common/ObjectLiteral";
+import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError";
+import { QueryFailedError } from "../../error/QueryFailedError";
+import { AbstractSqliteQueryRunner } from "../sqlite-abstract/AbstractSqliteQueryRunner";
+import { NativescriptDriver } from "./NativescriptDriver";
+import { Broadcaster } from "../../subscriber/Broadcaster";
 
 /**
  * Runs queries on a single sqlite database connection.
  */
 export class NativescriptQueryRunner extends AbstractSqliteQueryRunner {
-
     /**
      * Database driver used by connection.
      */
@@ -30,25 +29,37 @@ export class NativescriptQueryRunner extends AbstractSqliteQueryRunner {
      * Executes a given SQL query.
      */
     query(query: string, parameters?: any[]): Promise<any> {
-        if (this.isReleased)
-            throw new QueryRunnerAlreadyReleasedError();
+        if (this.isReleased) throw new QueryRunnerAlreadyReleasedError();
 
         const connection = this.driver.connection;
 
-        return new Promise<any[]>( (ok, fail) => {
+        return new Promise<any[]>((ok, fail) => {
             const isInsertQuery = query.substr(0, 11) === "INSERT INTO";
 
-            const handler = function (err: any, result: any) {
-
+            const handler = function(err: any, result: any) {
                 // log slow queries if maxQueryExecution time is set
-                const maxQueryExecutionTime = connection.options.maxQueryExecutionTime;
+                const maxQueryExecutionTime =
+                    connection.options.maxQueryExecutionTime;
                 const queryEndTime = +new Date();
                 const queryExecutionTime = queryEndTime - queryStartTime;
-                if (maxQueryExecutionTime && queryExecutionTime > maxQueryExecutionTime)
-                    connection.logger.logQuerySlow(queryExecutionTime, query, parameters, this);
+                if (
+                    maxQueryExecutionTime &&
+                    queryExecutionTime > maxQueryExecutionTime
+                )
+                    connection.logger.logQuerySlow(
+                        queryExecutionTime,
+                        query,
+                        parameters,
+                        this
+                    );
 
                 if (err) {
-                    connection.logger.logQueryError(err, query, parameters, this);
+                    connection.logger.logQueryError(
+                        err,
+                        query,
+                        parameters,
+                        this
+                    );
                     fail(new QueryFailedError(query, parameters, err));
                 } else {
                     // when isInsertQuery == true, result is the id
@@ -74,7 +85,12 @@ export class NativescriptQueryRunner extends AbstractSqliteQueryRunner {
     /**
      * Parametrizes given object of values. Used to create column=value queries.
      */
-    protected parametrize(objectLiteral: ObjectLiteral, startIndex: number = 0): string[] {
-        return Object.keys(objectLiteral).map((key, index) => `"${key}"` + "=?");
+    protected parametrize(
+        objectLiteral: ObjectLiteral,
+        startIndex = 0
+    ): string[] {
+        return Object.keys(objectLiteral).map(
+            (key, index) => `"${key}"` + "=?"
+        );
     }
 }

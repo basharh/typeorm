@@ -1,14 +1,13 @@
-import {JoinColumnMetadataArgs} from "./JoinColumnMetadataArgs";
+import { JoinColumnMetadataArgs } from "./JoinColumnMetadataArgs";
 
 /**
  * Arguments for JoinTableMetadata class.
  */
 export interface JoinTableMetadataArgs {
-
     /**
      * Class to which this column is applied.
      */
-    readonly target: Function|string;
+    readonly target: Function | string;
 
     /**
      * Class's property name to which this column is applied.
@@ -42,5 +41,4 @@ export interface JoinTableMetadataArgs {
      * Works only in some databases (like postgres and mssql).
      */
     readonly schema?: string;
-
 }

@@ -1,22 +1,21 @@
-import {Alias} from "./Alias";
-import {ObjectLiteral} from "../common/ObjectLiteral";
-import {OrderByCondition} from "../find-options/OrderByCondition";
-import {JoinAttribute} from "./JoinAttribute";
-import {RelationIdAttribute} from "./relation-id/RelationIdAttribute";
-import {RelationCountAttribute} from "./relation-count/RelationCountAttribute";
-import {Connection} from "../connection/Connection";
-import {EntityMetadata} from "../metadata/EntityMetadata";
-import {SelectQuery} from "./SelectQuery";
-import {ColumnMetadata} from "../metadata/ColumnMetadata";
-import {RelationMetadata} from "../metadata/RelationMetadata";
-import {QueryBuilder} from "./QueryBuilder";
-import {SelectQueryBuilderOption} from "./SelectQueryBuilderOption";
+import { Alias } from "./Alias";
+import { ObjectLiteral } from "../common/ObjectLiteral";
+import { OrderByCondition } from "../find-options/OrderByCondition";
+import { JoinAttribute } from "./JoinAttribute";
+import { RelationIdAttribute } from "./relation-id/RelationIdAttribute";
+import { RelationCountAttribute } from "./relation-count/RelationCountAttribute";
+import { Connection } from "../connection/Connection";
+import { EntityMetadata } from "../metadata/EntityMetadata";
+import { SelectQuery } from "./SelectQuery";
+import { ColumnMetadata } from "../metadata/ColumnMetadata";
+import { RelationMetadata } from "../metadata/RelationMetadata";
+import { QueryBuilder } from "./QueryBuilder";
+import { SelectQueryBuilderOption } from "./SelectQueryBuilderOption";
 
 /**
  * Contains all properties of the QueryBuilder that needs to be build a final query.
  */
 export class QueryExpressionMap {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -24,7 +23,7 @@ export class QueryExpressionMap {
     /**
      * Indicates if QueryBuilder used to select entities and not a raw results.
      */
-    queryEntity: boolean = false;
+    queryEntity = false;
 
     /**
      * Main alias is a main selection object selected by QueryBuilder.
@@ -39,7 +38,8 @@ export class QueryExpressionMap {
     /**
      * Represents query type. QueryBuilder is able to build SELECT, UPDATE and DELETE queries.
      */
-    queryType: "select"|"update"|"delete"|"insert"|"relation" = "select";
+    queryType: "select" | "update" | "delete" | "insert" | "relation" =
+        "select";
 
     /**
      * Data needs to be SELECT-ed.
@@ -49,7 +49,7 @@ export class QueryExpressionMap {
     /**
      * Whether SELECT is DISTINCT.
      */
-    selectDistinct: boolean = false;
+    selectDistinct = false;
 
     /**
      * FROM-s to be selected.
@@ -60,12 +60,12 @@ export class QueryExpressionMap {
      * If update query was used, it needs "update set" - properties which will be updated by this query.
      * If insert query was used, it needs "insert set" - values that needs to be inserted.
      */
-    valuesSet?: ObjectLiteral|ObjectLiteral[];
+    valuesSet?: ObjectLiteral | ObjectLiteral[];
 
     /**
      * Optional returning (or output) clause for insert, update or delete queries.
      */
-    returning: string|string[];
+    returning: string | string[];
 
     /**
      * Extra returning columns to be added to the returning statement if driver supports it.
@@ -75,7 +75,7 @@ export class QueryExpressionMap {
     /**
      * Optional on conflict statement used in insertion query in postgres.
      */
-    onConflict: string = "";
+    onConflict = "";
 
     /**
      * Optional on ignore statement used in insertion query in databases.
@@ -85,7 +85,7 @@ export class QueryExpressionMap {
     /**
      * Optional on update statement used in insertion query in databases.
      */
-    onUpdate: { columns?: string, conflict?: string, overwrite?: string };
+    onUpdate: { columns?: string; conflict?: string; overwrite?: string };
 
     /**
      * JOIN queries.
@@ -105,12 +105,12 @@ export class QueryExpressionMap {
     /**
      * WHERE queries.
      */
-    wheres: { type: "simple"|"and"|"or", condition: string }[] = [];
+    wheres: { type: "simple" | "and" | "or"; condition: string }[] = [];
 
     /**
      * HAVING queries.
      */
-    havings: { type: "simple"|"and"|"or", condition: string }[] = [];
+    havings: { type: "simple" | "and" | "or"; condition: string }[] = [];
 
     /**
      * ORDER BY queries.
@@ -145,12 +145,16 @@ export class QueryExpressionMap {
     /**
      * Locking mode.
      */
-    lockMode?: "optimistic"|"pessimistic_read"|"pessimistic_write"|"dirty_read";
+    lockMode?:
+        | "optimistic"
+        | "pessimistic_read"
+        | "pessimistic_write"
+        | "dirty_read";
 
     /**
      * Current version of the entity, used for locking.
      */
-    lockVersion?: number|Date;
+    lockVersion?: number | Date;
 
     /**
      * Parameters used to be escaped in final query.
@@ -162,25 +166,25 @@ export class QueryExpressionMap {
      *
      * todo: rename to isQuotingDisabled, also think if it should be named "escaping"
      */
-    disableEscaping: boolean = true;
+    disableEscaping = true;
 
     /**
      * Indicates if virtual columns should be included in entity result.
      *
      * todo: what to do with it? is it properly used? what about persistence?
      */
-    enableRelationIdValues: boolean = false;
+    enableRelationIdValues = false;
 
     /**
      * Extra where condition appended to the end of original where conditions with AND keyword.
      * Original condition will be wrapped into brackets.
      */
-    extraAppendedAndWhereCondition: string = "";
+    extraAppendedAndWhereCondition = "";
 
     /**
      * Indicates if query builder creates a subquery.
      */
-    subQuery: boolean = false;
+    subQuery = false;
 
     /**
      * If QueryBuilder was created in a subquery mode then its parent QueryBuilder (who created subquery) will be stored here.
@@ -192,12 +196,12 @@ export class QueryExpressionMap {
      * By default this is enabled, however we need this because aliases are not supported in UPDATE and DELETE queries,
      * but user can use them in WHERE expressions.
      */
-    aliasNamePrefixingEnabled: boolean = true;
+    aliasNamePrefixingEnabled = true;
 
     /**
      * Indicates if query result cache is enabled or not.
      */
-    cache: boolean = false;
+    cache = false;
 
     /**
      * Time in milliseconds in which cache will expire.
@@ -225,7 +229,7 @@ export class QueryExpressionMap {
     /**
      * Entity (target) which relations will be updated.
      */
-    of: any|any[];
+    of: any | any[];
 
     /**
      * List of columns where data should be inserted.
@@ -242,17 +246,17 @@ export class QueryExpressionMap {
      * Indicates if entity must be updated after insertion / updation.
      * This may produce extra query or use RETURNING / OUTPUT statement (depend on database).
      */
-    updateEntity: boolean = true;
+    updateEntity = true;
 
     /**
      * Indicates if listeners and subscribers must be called before and after query execution.
      */
-    callListeners: boolean = true;
+    callListeners = true;
 
     /**
      * Indicates if query must be wrapped into transaction.
      */
-    useTransaction: boolean = false;
+    useTransaction = false;
 
     /**
      * Extra parameters.
@@ -264,8 +268,7 @@ export class QueryExpressionMap {
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(protected connection: Connection) {
-    }
+    constructor(protected connection: Connection) {}
 
     // -------------------------------------------------------------------------
     // Accessors
@@ -276,12 +279,20 @@ export class QueryExpressionMap {
      * otherwise it uses default entity order by if it was set.
      */
     get allOrderBys() {
-        if (!Object.keys(this.orderBys).length && this.mainAlias!.hasMetadata && this.options.indexOf("disable-global-order") === -1) {
+        if (
+            !Object.keys(this.orderBys).length &&
+            this.mainAlias!.hasMetadata &&
+            this.options.indexOf("disable-global-order") === -1
+        ) {
             const entityOrderBy = this.mainAlias!.metadata.orderBy || {};
-            return Object.keys(entityOrderBy).reduce((orderBy, key) => {
-                orderBy[this.mainAlias!.name + "." + key] = entityOrderBy[key];
-                return orderBy;
-            }, {} as OrderByCondition);
+            return Object.keys(entityOrderBy).reduce(
+                (orderBy, key) => {
+                    orderBy[this.mainAlias!.name + "." + key] =
+                        entityOrderBy[key];
+                    return orderBy;
+                },
+                {} as OrderByCondition
+            );
         }
 
         return this.orderBys;
@@ -295,7 +306,6 @@ export class QueryExpressionMap {
      * Creates a main alias and adds it to the current expression map.
      */
     setMainAlias(alias: Alias): Alias {
-
         // if main alias is already set then remove it from the array
         // if (this.mainAlias)
         //     this.aliases.splice(this.aliases.indexOf(this.mainAlias));
@@ -309,11 +319,16 @@ export class QueryExpressionMap {
     /**
      * Creates a new alias and adds it to the current expression map.
      */
-    createAlias(options: { type: "from"|"select"|"join"|"other", name?: string, target?: Function|string, tablePath?: string, subQuery?: string, metadata?: EntityMetadata }): Alias {
-
+    createAlias(options: {
+        type: "from" | "select" | "join" | "other";
+        name?: string;
+        target?: Function | string;
+        tablePath?: string;
+        subQuery?: string;
+        metadata?: EntityMetadata;
+    }): Alias {
         let aliasName = options.name;
-        if (!aliasName && options.tablePath)
-            aliasName = options.tablePath;
+        if (!aliasName && options.tablePath) aliasName = options.tablePath;
         if (!aliasName && options.target instanceof Function)
             aliasName = options.target.name;
         if (!aliasName && typeof options.target === "string")
@@ -321,16 +336,12 @@ export class QueryExpressionMap {
 
         const alias = new Alias();
         alias.type = options.type;
-        if (aliasName)
-            alias.name = aliasName;
-        if (options.metadata)
-            alias.metadata = options.metadata;
+        if (aliasName) alias.name = aliasName;
+        if (options.metadata) alias.metadata = options.metadata;
         if (options.target && !alias.hasMetadata)
             alias.metadata = this.connection.getMetadata(options.target);
-        if (options.tablePath)
-            alias.tablePath = options.tablePath;
-        if (options.subQuery)
-            alias.subQuery = options.subQuery;
+        if (options.tablePath) alias.tablePath = options.tablePath;
+        if (options.subQuery) alias.subQuery = options.subQuery;
 
         this.aliases.push(alias);
         return alias;
@@ -343,12 +354,16 @@ export class QueryExpressionMap {
     findAliasByName(aliasName: string): Alias {
         const alias = this.aliases.find(alias => alias.name === aliasName);
         if (!alias)
-            throw new Error(`"${aliasName}" alias was not found. Maybe you forgot to join it?`);
+            throw new Error(
+                `"${aliasName}" alias was not found. Maybe you forgot to join it?`
+            );
 
         return alias;
     }
 
-    findColumnByAliasExpression(aliasExpression: string): ColumnMetadata|undefined {
+    findColumnByAliasExpression(
+        aliasExpression: string
+    ): ColumnMetadata | undefined {
         const [aliasName, propertyPath] = aliasExpression.split(".");
         const alias = this.findAliasByName(aliasName);
         return alias.metadata.findColumnWithPropertyName(propertyPath);
@@ -363,9 +378,13 @@ export class QueryExpressionMap {
         if (!this.mainAlias)
             throw new Error(`Entity to work with is not specified!`); // todo: better message
 
-        const relationMetadata = this.mainAlias.metadata.findRelationWithPropertyPath(this.relationPropertyPath);
+        const relationMetadata = this.mainAlias.metadata.findRelationWithPropertyPath(
+            this.relationPropertyPath
+        );
         if (!relationMetadata)
-            throw new Error(`Relation ${this.relationPropertyPath} was not found in entity ${this.mainAlias.name}`); // todo: better message
+            throw new Error(
+                `Relation ${this.relationPropertyPath} was not found in entity ${this.mainAlias.name}`
+            ); // todo: better message
 
         return relationMetadata;
     }
@@ -385,9 +404,15 @@ export class QueryExpressionMap {
         map.onConflict = this.onConflict;
         map.onIgnore = this.onIgnore;
         map.onUpdate = this.onUpdate;
-        map.joinAttributes = this.joinAttributes.map(join => new JoinAttribute(this.connection, this, join));
-        map.relationIdAttributes = this.relationIdAttributes.map(relationId => new RelationIdAttribute(this, relationId));
-        map.relationCountAttributes = this.relationCountAttributes.map(relationCount => new RelationCountAttribute(this, relationCount));
+        map.joinAttributes = this.joinAttributes.map(
+            join => new JoinAttribute(this.connection, this, join)
+        );
+        map.relationIdAttributes = this.relationIdAttributes.map(
+            relationId => new RelationIdAttribute(this, relationId)
+        );
+        map.relationCountAttributes = this.relationCountAttributes.map(
+            relationCount => new RelationCountAttribute(this, relationCount)
+        );
         map.wheres = this.wheres.map(where => ({ ...where }));
         map.havings = this.havings.map(having => ({ ...having }));
         map.orderBys = Object.assign({}, this.orderBys);
@@ -417,5 +442,4 @@ export class QueryExpressionMap {
         map.nativeParameters = Object.assign({}, this.nativeParameters);
         return map;
     }
-
 }

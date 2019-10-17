@@ -7,8 +7,10 @@ export class ReturningStatementNotSupportedError extends Error {
 
     constructor() {
         super();
-        Object.setPrototypeOf(this, ReturningStatementNotSupportedError.prototype);
+        Object.setPrototypeOf(
+            this,
+            ReturningStatementNotSupportedError.prototype
+        );
         this.message = `OUTPUT or RETURNING clause only supported by Microsoft SQL Server or PostgreSQL databases.`;
     }
-
 }

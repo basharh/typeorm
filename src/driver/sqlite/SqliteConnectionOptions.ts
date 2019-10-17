@@ -1,10 +1,9 @@
-import {BaseConnectionOptions} from "../../connection/BaseConnectionOptions";
+import { BaseConnectionOptions } from "../../connection/BaseConnectionOptions";
 
 /**
  * Sqlite-specific connection options.
  */
 export interface SqliteConnectionOptions extends BaseConnectionOptions {
-
     /**
      * Database type.
      */
@@ -19,5 +18,4 @@ export interface SqliteConnectionOptions extends BaseConnectionOptions {
      * Encryption key for for SQLCipher.
      */
     readonly key?: string;
-
 }

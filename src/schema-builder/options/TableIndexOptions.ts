@@ -2,7 +2,6 @@
  * Database's table index options.
  */
 export interface TableIndexOptions {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -38,5 +37,4 @@ export interface TableIndexOptions {
      * Index filter condition.
      */
     where?: string;
-
 }

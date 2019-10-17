@@ -1,10 +1,9 @@
-import {Connection, SelectQueryBuilder} from "../..";
+import { Connection, SelectQueryBuilder } from "../..";
 
 /**
  * View options.
  */
 export interface ViewOptions {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -17,7 +16,7 @@ export interface ViewOptions {
     /**
      * View expression.
      */
-    expression: string|((connection: Connection) => SelectQueryBuilder<any>);
+    expression: string | ((connection: Connection) => SelectQueryBuilder<any>);
 
     /**
      * Indicates if view is materialized

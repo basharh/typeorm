@@ -1,9 +1,7 @@
-
 /**
  * Table's column options.
  */
 export interface TableColumnOptions {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -41,7 +39,7 @@ export interface TableColumnOptions {
     /**
      * Specifies generation strategy if this column will use auto increment.
      */
-    generationStrategy?: "uuid"|"increment"|"rowid";
+    generationStrategy?: "uuid" | "increment" | "rowid";
 
     /**
      * Indicates if column is a primary key.
@@ -89,7 +87,7 @@ export interface TableColumnOptions {
      * The precision for a decimal (exact numeric) column (applies only for decimal column), which is the maximum
      * number of digits that are stored for the values.
      */
-    precision?: number|null;
+    precision?: number | null;
 
     /**
      * The scale for a decimal (exact numeric) column (applies only for decimal column), which represents the number
@@ -121,7 +119,7 @@ export interface TableColumnOptions {
     /**
      * Generated column type. Supports only in MySQL.
      */
-    generatedType?: "VIRTUAL"|"STORED";
+    generatedType?: "VIRTUAL" | "STORED";
 
     /**
      * Spatial Feature Type (Geometry, Point, Polygon, etc.)

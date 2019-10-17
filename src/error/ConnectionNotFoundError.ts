@@ -9,5 +9,4 @@ export class ConnectionNotFoundError extends Error {
         Object.setPrototypeOf(this, ConnectionNotFoundError.prototype);
         this.message = `Connection "${name}" was not found.`;
     }
-
 }

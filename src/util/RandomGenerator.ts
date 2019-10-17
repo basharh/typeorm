@@ -1,5 +1,4 @@
 export class RandomGenerator {
-
     /**
      *  discuss at: http://locutus.io/php/sha1/
      * original by: Webtoolkit.info (http://www.webtoolkit.info/)
@@ -13,13 +12,12 @@ export class RandomGenerator {
      *   returns 1: '54916d2e62f65b3afa6e192e6a601cdbe5cb5897'
      */
     static sha1(str: string) {
-
-        let _rotLeft = function(n: any, s: any) {
-            let t4 = (n << s) | (n >>> (32 - s));
+        const _rotLeft = function(n: any, s: any) {
+            const t4 = (n << s) | (n >>> (32 - s));
             return t4;
         };
 
-        let _cvtHex = function(val: any) {
+        const _cvtHex = function(val: any) {
             let str = "";
             let i;
             let v;
@@ -33,24 +31,25 @@ export class RandomGenerator {
 
         let blockstart;
         let i, j;
-        let W = new Array(80);
+        const W = new Array(80);
         let H0 = 0x67452301;
-        let H1 = 0xEFCDAB89;
-        let H2 = 0x98BADCFE;
+        let H1 = 0xefcdab89;
+        let H2 = 0x98badcfe;
         let H3 = 0x10325476;
-        let H4 = 0xC3D2E1F0;
+        let H4 = 0xc3d2e1f0;
         let A, B, C, D, E;
         let temp;
 
         // utf8_encode
-        str = /*unescape*/(encodeURIComponent(str));
-        let strLen = str.length;
+        str = /*unescape*/ encodeURIComponent(str);
+        const strLen = str.length;
 
-        let wordArray = [];
+        const wordArray = [];
         for (i = 0; i < strLen - 3; i += 4) {
-            j = str.charCodeAt(i) << 24 |
-                str.charCodeAt(i + 1) << 16 |
-                str.charCodeAt(i + 2) << 8 |
+            j =
+                (str.charCodeAt(i) << 24) |
+                (str.charCodeAt(i + 1) << 16) |
+                (str.charCodeAt(i + 2) << 8) |
                 str.charCodeAt(i + 3);
             wordArray.push(j);
         }
@@ -60,22 +59,26 @@ export class RandomGenerator {
                 i = 0x080000000;
                 break;
             case 1:
-                i = str.charCodeAt(strLen - 1) << 24 | 0x0800000;
+                i = (str.charCodeAt(strLen - 1) << 24) | 0x0800000;
                 break;
             case 2:
-                i = str.charCodeAt(strLen - 2) << 24 | str.charCodeAt(strLen - 1) << 16 | 0x08000;
+                i =
+                    (str.charCodeAt(strLen - 2) << 24) |
+                    (str.charCodeAt(strLen - 1) << 16) |
+                    0x08000;
                 break;
             case 3:
-                i = str.charCodeAt(strLen - 3) << 24 |
-                    str.charCodeAt(strLen - 2) << 16 |
-                    str.charCodeAt(strLen - 1) <<
-                    8 | 0x80;
+                i =
+                    (str.charCodeAt(strLen - 3) << 24) |
+                    (str.charCodeAt(strLen - 2) << 16) |
+                    (str.charCodeAt(strLen - 1) << 8) |
+                    0x80;
                 break;
         }
 
         wordArray.push(i);
 
-        while ((wordArray.length % 16) !== 14) {
+        while (wordArray.length % 16 !== 14) {
             wordArray.push(0);
         }
 
@@ -97,7 +100,13 @@ export class RandomGenerator {
             E = H4;
 
             for (i = 0; i <= 19; i++) {
-                temp = (_rotLeft(A, 5) + ((B & C) | (~B & D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
+                temp =
+                    (_rotLeft(A, 5) +
+                        ((B & C) | (~B & D)) +
+                        E +
+                        W[i] +
+                        0x5a827999) &
+                    0x0ffffffff;
                 E = D;
                 D = C;
                 C = _rotLeft(B, 30);
@@ -106,7 +115,9 @@ export class RandomGenerator {
             }
 
             for (i = 20; i <= 39; i++) {
-                temp = (_rotLeft(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
+                temp =
+                    (_rotLeft(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ed9eba1) &
+                    0x0ffffffff;
                 E = D;
                 D = C;
                 C = _rotLeft(B, 30);
@@ -115,7 +126,13 @@ export class RandomGenerator {
             }
 
             for (i = 40; i <= 59; i++) {
-                temp = (_rotLeft(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
+                temp =
+                    (_rotLeft(A, 5) +
+                        ((B & C) | (B & D) | (C & D)) +
+                        E +
+                        W[i] +
+                        0x8f1bbcdc) &
+                    0x0ffffffff;
                 E = D;
                 D = C;
                 C = _rotLeft(B, 30);
@@ -124,7 +141,9 @@ export class RandomGenerator {
             }
 
             for (i = 60; i <= 79; i++) {
-                temp = (_rotLeft(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
+                temp =
+                    (_rotLeft(A, 5) + (B ^ C ^ D) + E + W[i] + 0xca62c1d6) &
+                    0x0ffffffff;
                 E = D;
                 D = C;
                 C = _rotLeft(B, 30);
@@ -139,7 +158,8 @@ export class RandomGenerator {
             H4 = (H4 + E) & 0x0ffffffff;
         }
 
-        temp = _cvtHex(H0) + _cvtHex(H1) + _cvtHex(H2) + _cvtHex(H3) + _cvtHex(H4);
+        temp =
+            _cvtHex(H0) + _cvtHex(H1) + _cvtHex(H2) + _cvtHex(H3) + _cvtHex(H4);
         return temp.toLowerCase();
     }
 
@@ -147,10 +167,10 @@ export class RandomGenerator {
      * RFC4122 compliant UUID v4 generator.
      */
     static uuid4(): string {
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) =>  {
-            const r = Math.random() * 16 | 0, v = c === "x" ? r : (r & 0x3 | 0x8);
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+            const r = (Math.random() * 16) | 0,
+                v = c === "x" ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
     }
-
 }

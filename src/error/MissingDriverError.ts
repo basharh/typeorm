@@ -9,5 +9,4 @@ export class MissingDriverError extends Error {
         Object.setPrototypeOf(this, MissingDriverError.prototype);
         this.message = `Wrong driver: "${driverType}" given. Supported drivers are: "cordova", "expo", "mariadb", "mongodb", "mssql", "mysql", "oracle", "postgres", "sqlite", "sqljs", "react-native".`;
     }
-
 }

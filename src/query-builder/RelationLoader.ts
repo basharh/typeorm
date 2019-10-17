@@ -1,18 +1,16 @@
-import {Connection, ObjectLiteral, QueryRunner} from "../";
-import {RelationMetadata} from "../metadata/RelationMetadata";
+import { Connection, ObjectLiteral, QueryRunner } from "../";
+import { RelationMetadata } from "../metadata/RelationMetadata";
 
 /**
  * Wraps entities and creates getters/setters for their relations
  * to be able to lazily load relations when accessing these relations.
  */
 export class RelationLoader {
-
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(private connection: Connection) {
-    }
+    constructor(private connection: Connection) {}
 
     // -------------------------------------------------------------------------
     // Public Methods
@@ -21,19 +19,38 @@ export class RelationLoader {
     /**
      * Loads relation data for the given entity and its relation.
      */
-    load(relation: RelationMetadata, entityOrEntities: ObjectLiteral|ObjectLiteral[], queryRunner?: QueryRunner): Promise<any[]> { // todo: check all places where it uses non array
+    load(
+        relation: RelationMetadata,
+        entityOrEntities: ObjectLiteral | ObjectLiteral[],
+        queryRunner?: QueryRunner
+    ): Promise<any[]> {
+        // todo: check all places where it uses non array
         if (queryRunner && queryRunner.isReleased) queryRunner = undefined; // get new one if already closed
         if (relation.isManyToOne || relation.isOneToOneOwner) {
-            return this.loadManyToOneOrOneToOneOwner(relation, entityOrEntities, queryRunner);
-
+            return this.loadManyToOneOrOneToOneOwner(
+                relation,
+                entityOrEntities,
+                queryRunner
+            );
         } else if (relation.isOneToMany || relation.isOneToOneNotOwner) {
-            return this.loadOneToManyOrOneToOneNotOwner(relation, entityOrEntities, queryRunner);
-
+            return this.loadOneToManyOrOneToOneNotOwner(
+                relation,
+                entityOrEntities,
+                queryRunner
+            );
         } else if (relation.isManyToManyOwner) {
-            return this.loadManyToManyOwner(relation, entityOrEntities, queryRunner);
-
-        } else { // many-to-many non owner
-            return this.loadManyToManyNotOwner(relation, entityOrEntities, queryRunner);
+            return this.loadManyToManyOwner(
+                relation,
+                entityOrEntities,
+                queryRunner
+            );
+        } else {
+            // many-to-many non owner
+            return this.loadManyToManyNotOwner(
+                relation,
+                entityOrEntities,
+                queryRunner
+            );
         }
     }
 
@@ -45,33 +62,77 @@ export class RelationLoader {
      * example: SELECT category.id AS category_id, category.name AS category_name FROM category category
      *              INNER JOIN post Post ON Post.category=category.id WHERE Post.id=1
      */
-    loadManyToOneOrOneToOneOwner(relation: RelationMetadata, entityOrEntities: ObjectLiteral|ObjectLiteral[], queryRunner?: QueryRunner): Promise<any> {
-        const entities = entityOrEntities instanceof Array ? entityOrEntities : [entityOrEntities];
+    loadManyToOneOrOneToOneOwner(
+        relation: RelationMetadata,
+        entityOrEntities: ObjectLiteral | ObjectLiteral[],
+        queryRunner?: QueryRunner
+    ): Promise<any> {
+        const entities =
+            entityOrEntities instanceof Array
+                ? entityOrEntities
+                : [entityOrEntities];
         const columns = relation.entityMetadata.primaryColumns;
-        const joinColumns = relation.isOwning ? relation.joinColumns : relation.inverseRelation!.joinColumns;
-        const conditions = joinColumns.map(joinColumn => {
-            return `${relation.entityMetadata.name}.${joinColumn.propertyName} = ${relation.propertyName}.${joinColumn.referencedColumn!.propertyName}`;
-        }).join(" AND ");
+        const joinColumns = relation.isOwning
+            ? relation.joinColumns
+            : relation.inverseRelation!.joinColumns;
+        const conditions = joinColumns
+            .map(joinColumn => {
+                return `${relation.entityMetadata.name}.${
+                    joinColumn.propertyName
+                } = ${relation.propertyName}.${
+                    joinColumn.referencedColumn!.propertyName
+                }`;
+            })
+            .join(" AND ");
 
         const joinAliasName = relation.entityMetadata.name;
         const qb = this.connection
             .createQueryBuilder(queryRunner)
             .select(relation.propertyName) // category
             .from(relation.type, relation.propertyName) // Category, category
-            .innerJoin(relation.entityMetadata.target as Function, joinAliasName, conditions);
+            .innerJoin(
+                relation.entityMetadata.target as Function,
+                joinAliasName,
+                conditions
+            );
 
         if (columns.length === 1) {
-            qb.where(`${joinAliasName}.${columns[0].propertyPath} IN (:...${joinAliasName + "_" + columns[0].propertyName})`);
-            qb.setParameter(joinAliasName + "_" + columns[0].propertyName, entities.map(entity => columns[0].getEntityValue(entity)));
-
+            qb.where(
+                `${joinAliasName}.${
+                    columns[0].propertyPath
+                } IN (:...${joinAliasName + "_" + columns[0].propertyName})`
+            );
+            qb.setParameter(
+                joinAliasName + "_" + columns[0].propertyName,
+                entities.map(entity => columns[0].getEntityValue(entity))
+            );
         } else {
-            const condition = entities.map((entity, entityIndex) => {
-                return columns.map((column, columnIndex) => {
-                    const paramName = joinAliasName + "_entity_" + entityIndex + "_" + columnIndex;
-                    qb.setParameter(paramName, column.getEntityValue(entity));
-                    return joinAliasName + "." + column.propertyPath + " = :" + paramName;
-                }).join(" AND ");
-            }).map(condition => "(" + condition + ")").join(" OR ");
+            const condition = entities
+                .map((entity, entityIndex) => {
+                    return columns
+                        .map((column, columnIndex) => {
+                            const paramName =
+                                joinAliasName +
+                                "_entity_" +
+                                entityIndex +
+                                "_" +
+                                columnIndex;
+                            qb.setParameter(
+                                paramName,
+                                column.getEntityValue(entity)
+                            );
+                            return (
+                                joinAliasName +
+                                "." +
+                                column.propertyPath +
+                                " = :" +
+                                paramName
+                            );
+                        })
+                        .join(" AND ");
+                })
+                .map(condition => "(" + condition + ")")
+                .join(" OR ");
             qb.where(condition);
         }
 
@@ -86,8 +147,15 @@ export class RelationLoader {
      * FROM post post
      * WHERE post.[joinColumn.name] = entity[joinColumn.referencedColumn]
      */
-    loadOneToManyOrOneToOneNotOwner(relation: RelationMetadata, entityOrEntities: ObjectLiteral|ObjectLiteral[], queryRunner?: QueryRunner): Promise<any> {
-        const entities = entityOrEntities instanceof Array ? entityOrEntities : [entityOrEntities];
+    loadOneToManyOrOneToOneNotOwner(
+        relation: RelationMetadata,
+        entityOrEntities: ObjectLiteral | ObjectLiteral[],
+        queryRunner?: QueryRunner
+    ): Promise<any> {
+        const entities =
+            entityOrEntities instanceof Array
+                ? entityOrEntities
+                : [entityOrEntities];
         const aliasName = relation.propertyName;
         const columns = relation.inverseRelation!.joinColumns;
         const qb = this.connection
@@ -96,17 +164,44 @@ export class RelationLoader {
             .from(relation.inverseRelation!.entityMetadata.target, aliasName);
 
         if (columns.length === 1) {
-            qb.where(`${aliasName}.${columns[0].propertyPath} IN (:...${aliasName + "_" + columns[0].propertyName})`);
-            qb.setParameter(aliasName + "_" + columns[0].propertyName, entities.map(entity => columns[0].referencedColumn!.getEntityValue(entity)));
-
+            qb.where(
+                `${aliasName}.${columns[0].propertyPath} IN (:...${aliasName +
+                    "_" +
+                    columns[0].propertyName})`
+            );
+            qb.setParameter(
+                aliasName + "_" + columns[0].propertyName,
+                entities.map(entity =>
+                    columns[0].referencedColumn!.getEntityValue(entity)
+                )
+            );
         } else {
-            const condition = entities.map((entity, entityIndex) => {
-                return columns.map((column, columnIndex) => {
-                    const paramName = aliasName + "_entity_" + entityIndex + "_" + columnIndex;
-                    qb.setParameter(paramName, column.referencedColumn!.getEntityValue(entity));
-                    return aliasName + "." + column.propertyPath + " = :" + paramName;
-                }).join(" AND ");
-            }).map(condition => "(" + condition + ")").join(" OR ");
+            const condition = entities
+                .map((entity, entityIndex) => {
+                    return columns
+                        .map((column, columnIndex) => {
+                            const paramName =
+                                aliasName +
+                                "_entity_" +
+                                entityIndex +
+                                "_" +
+                                columnIndex;
+                            qb.setParameter(
+                                paramName,
+                                column.referencedColumn!.getEntityValue(entity)
+                            );
+                            return (
+                                aliasName +
+                                "." +
+                                column.propertyPath +
+                                " = :" +
+                                paramName
+                            );
+                        })
+                        .join(" AND ");
+                })
+                .map(condition => "(" + condition + ")")
+                .join(" OR ");
             qb.where(condition);
         }
         return qb.getMany();
@@ -122,26 +217,50 @@ export class RelationLoader {
      * ON post_categories.postId = :postId
      * AND post_categories.categoryId = category.id
      */
-    loadManyToManyOwner(relation: RelationMetadata, entityOrEntities: ObjectLiteral|ObjectLiteral[], queryRunner?: QueryRunner): Promise<any> {
-        const entities = entityOrEntities instanceof Array ? entityOrEntities : [entityOrEntities];
+    loadManyToManyOwner(
+        relation: RelationMetadata,
+        entityOrEntities: ObjectLiteral | ObjectLiteral[],
+        queryRunner?: QueryRunner
+    ): Promise<any> {
+        const entities =
+            entityOrEntities instanceof Array
+                ? entityOrEntities
+                : [entityOrEntities];
         const mainAlias = relation.propertyName;
         const joinAlias = relation.junctionEntityMetadata!.tableName;
         const joinColumnConditions = relation.joinColumns.map(joinColumn => {
             return `${joinAlias}.${joinColumn.propertyName} IN (:...${joinColumn.propertyName})`;
         });
-        const inverseJoinColumnConditions = relation.inverseJoinColumns.map(inverseJoinColumn => {
-            return `${joinAlias}.${inverseJoinColumn.propertyName}=${mainAlias}.${inverseJoinColumn.referencedColumn!.propertyName}`;
-        });
-        const parameters = relation.joinColumns.reduce((parameters, joinColumn) => {
-            parameters[joinColumn.propertyName] = entities.map(entity => joinColumn.referencedColumn!.getEntityValue(entity));
-            return parameters;
-        }, {} as ObjectLiteral);
+        const inverseJoinColumnConditions = relation.inverseJoinColumns.map(
+            inverseJoinColumn => {
+                return `${joinAlias}.${
+                    inverseJoinColumn.propertyName
+                }=${mainAlias}.${
+                    inverseJoinColumn.referencedColumn!.propertyName
+                }`;
+            }
+        );
+        const parameters = relation.joinColumns.reduce(
+            (parameters, joinColumn) => {
+                parameters[joinColumn.propertyName] = entities.map(entity =>
+                    joinColumn.referencedColumn!.getEntityValue(entity)
+                );
+                return parameters;
+            },
+            {} as ObjectLiteral
+        );
 
         return this.connection
             .createQueryBuilder(queryRunner)
             .select(mainAlias)
             .from(relation.type, mainAlias)
-            .innerJoin(joinAlias, joinAlias, [...joinColumnConditions, ...inverseJoinColumnConditions].join(" AND "))
+            .innerJoin(
+                joinAlias,
+                joinAlias,
+                [...joinColumnConditions, ...inverseJoinColumnConditions].join(
+                    " AND "
+                )
+            )
             .setParameters(parameters)
             .getMany();
     }
@@ -155,26 +274,50 @@ export class RelationLoader {
      * ON post_categories.postId = post.id
      * AND post_categories.categoryId = post_categories.categoryId
      */
-    loadManyToManyNotOwner(relation: RelationMetadata, entityOrEntities: ObjectLiteral|ObjectLiteral[], queryRunner?: QueryRunner): Promise<any> {
-        const entities = entityOrEntities instanceof Array ? entityOrEntities : [entityOrEntities];
+    loadManyToManyNotOwner(
+        relation: RelationMetadata,
+        entityOrEntities: ObjectLiteral | ObjectLiteral[],
+        queryRunner?: QueryRunner
+    ): Promise<any> {
+        const entities =
+            entityOrEntities instanceof Array
+                ? entityOrEntities
+                : [entityOrEntities];
         const mainAlias = relation.propertyName;
         const joinAlias = relation.junctionEntityMetadata!.tableName;
-        const joinColumnConditions = relation.inverseRelation!.joinColumns.map(joinColumn => {
-            return `${joinAlias}.${joinColumn.propertyName} = ${mainAlias}.${joinColumn.referencedColumn!.propertyName}`;
-        });
-        const inverseJoinColumnConditions = relation.inverseRelation!.inverseJoinColumns.map(inverseJoinColumn => {
-            return `${joinAlias}.${inverseJoinColumn.propertyName} IN (:...${inverseJoinColumn.propertyName})`;
-        });
-        const parameters = relation.inverseRelation!.inverseJoinColumns.reduce((parameters, joinColumn) => {
-            parameters[joinColumn.propertyName] = entities.map(entity => joinColumn.referencedColumn!.getEntityValue(entity));
-            return parameters;
-        }, {} as ObjectLiteral);
+        const joinColumnConditions = relation.inverseRelation!.joinColumns.map(
+            joinColumn => {
+                return `${joinAlias}.${
+                    joinColumn.propertyName
+                } = ${mainAlias}.${joinColumn.referencedColumn!.propertyName}`;
+            }
+        );
+        const inverseJoinColumnConditions = relation.inverseRelation!.inverseJoinColumns.map(
+            inverseJoinColumn => {
+                return `${joinAlias}.${inverseJoinColumn.propertyName} IN (:...${inverseJoinColumn.propertyName})`;
+            }
+        );
+        const parameters = relation.inverseRelation!.inverseJoinColumns.reduce(
+            (parameters, joinColumn) => {
+                parameters[joinColumn.propertyName] = entities.map(entity =>
+                    joinColumn.referencedColumn!.getEntityValue(entity)
+                );
+                return parameters;
+            },
+            {} as ObjectLiteral
+        );
 
         return this.connection
             .createQueryBuilder(queryRunner)
             .select(mainAlias)
             .from(relation.type, mainAlias)
-            .innerJoin(joinAlias, joinAlias, [...joinColumnConditions, ...inverseJoinColumnConditions].join(" AND "))
+            .innerJoin(
+                joinAlias,
+                joinAlias,
+                [...joinColumnConditions, ...inverseJoinColumnConditions].join(
+                    " AND "
+                )
+            )
             .setParameters(parameters)
             .getMany();
     }
@@ -183,7 +326,11 @@ export class RelationLoader {
      * Wraps given entity and creates getters/setters for its given relation
      * to be able to lazily load data when accessing this relation.
      */
-    enableLazyLoad(relation: RelationMetadata, entity: ObjectLiteral, queryRunner?: QueryRunner) {
+    enableLazyLoad(
+        relation: RelationMetadata,
+        entity: ObjectLiteral,
+        queryRunner?: QueryRunner
+    ) {
         const relationLoader = this;
         const dataIndex = "__" + relation.propertyName + "__"; // in what property of the entity loaded data will be stored
         const promiseIndex = "__promise_" + relation.propertyName + "__"; // in what property of the entity loading promise will be stored
@@ -191,30 +338,39 @@ export class RelationLoader {
 
         Object.defineProperty(entity, relation.propertyName, {
             get: function() {
-                if (this[resolveIndex] === true || this[dataIndex] !== undefined) // if related data already was loaded then simply return it
+                if (
+                    this[resolveIndex] === true ||
+                    this[dataIndex] !== undefined
+                )
+                    // if related data already was loaded then simply return it
                     return Promise.resolve(this[dataIndex]);
 
-                if (this[promiseIndex]) // if related data is loading then return a promise relationLoader loads it
+                if (this[promiseIndex])
+                    // if related data is loading then return a promise relationLoader loads it
                     return this[promiseIndex];
 
                 // nothing is loaded yet, load relation data and save it in the model once they are loaded
-                this[promiseIndex] = relationLoader.load(relation, this, queryRunner).then(result => {
-                    if (relation.isOneToOne || relation.isManyToOne) result = result[0];
-                    this[dataIndex] = result;
-                    this[resolveIndex] = true;
-                    delete this[promiseIndex];
-                    return this[dataIndex];
-                });
+                this[promiseIndex] = relationLoader
+                    .load(relation, this, queryRunner)
+                    .then(result => {
+                        if (relation.isOneToOne || relation.isManyToOne)
+                            result = result[0];
+                        this[dataIndex] = result;
+                        this[resolveIndex] = true;
+                        delete this[promiseIndex];
+                        return this[dataIndex];
+                    });
                 return this[promiseIndex];
             },
-            set: function(value: any|Promise<any>) {
-                if (value instanceof Promise) { // if set data is a promise then wait for its resolve and save in the object
+            set: function(value: any | Promise<any>) {
+                if (value instanceof Promise) {
+                    // if set data is a promise then wait for its resolve and save in the object
                     value.then(result => {
                         this[dataIndex] = result;
                         this[resolveIndex] = true;
                     });
-
-                } else { // if its direct data set (non promise, probably not safe-typed)
+                } else {
+                    // if its direct data set (non promise, probably not safe-typed)
                     this[dataIndex] = value;
                     this[resolveIndex] = true;
                 }
@@ -222,5 +378,4 @@ export class RelationLoader {
             configurable: true
         });
     }
-
 }

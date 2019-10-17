@@ -1,12 +1,12 @@
-import {ObjectLiteral} from "../common/ObjectLiteral";
-import {EntityManager} from "../entity-manager/EntityManager";
-import {Repository} from "./Repository";
-import {TreeRepository} from "./TreeRepository";
-import {ObjectType} from "../common/ObjectType";
-import {CustomRepositoryDoesNotHaveEntityError} from "../error/CustomRepositoryDoesNotHaveEntityError";
-import {getMetadataArgsStorage} from "../index";
-import {CustomRepositoryNotFoundError} from "../error/CustomRepositoryNotFoundError";
-import {SelectQueryBuilder} from "../query-builder/SelectQueryBuilder";
+import { ObjectLiteral } from "../common/ObjectLiteral";
+import { EntityManager } from "../entity-manager/EntityManager";
+import { Repository } from "./Repository";
+import { TreeRepository } from "./TreeRepository";
+import { ObjectType } from "../common/ObjectType";
+import { CustomRepositoryDoesNotHaveEntityError } from "../error/CustomRepositoryDoesNotHaveEntityError";
+import { getMetadataArgsStorage } from "../index";
+import { CustomRepositoryNotFoundError } from "../error/CustomRepositoryNotFoundError";
+import { SelectQueryBuilder } from "../query-builder/SelectQueryBuilder";
 import { EntitySchema } from "../entity-schema/EntitySchema";
 
 /**
@@ -17,7 +17,6 @@ import { EntitySchema } from "../entity-schema/EntitySchema";
  * @experimental
  */
 export class AbstractRepository<Entity extends ObjectLiteral> {
-
     // -------------------------------------------------------------------------
     // Protected Methods Set Dynamically
     // -------------------------------------------------------------------------
@@ -68,13 +67,18 @@ export class AbstractRepository<Entity extends ObjectLiteral> {
         if (!target)
             throw new CustomRepositoryDoesNotHaveEntityError(this.constructor);
 
-        return this.manager.getRepository<Entity>(target).createQueryBuilder(alias);
+        return this.manager
+            .getRepository<Entity>(target)
+            .createQueryBuilder(alias);
     }
 
     /**
      * Creates a new query builder for the given entity that can be used to build a sql query.
      */
-    protected createQueryBuilderFor<T>(entity: ObjectType<T>, alias: string): SelectQueryBuilder<T> {
+    protected createQueryBuilderFor<T>(
+        entity: ObjectType<T>,
+        alias: string
+    ): SelectQueryBuilder<T> {
         return this.getRepositoryFor(entity).createQueryBuilder(alias);
     }
 
@@ -88,7 +92,9 @@ export class AbstractRepository<Entity extends ObjectLiteral> {
     /**
      * Gets the original ORM tree repository for the given entity class.
      */
-    protected getTreeRepositoryFor<T>(entity: ObjectType<T>): TreeRepository<T> {
+    protected getTreeRepositoryFor<T>(
+        entity: ObjectType<T>
+    ): TreeRepository<T> {
         return this.manager.getTreeRepository(entity);
     }
 
@@ -100,14 +106,22 @@ export class AbstractRepository<Entity extends ObjectLiteral> {
      * Gets custom repository's managed entity.
      * If given custom repository does not manage any entity then undefined will be returned.
      */
-    private getCustomRepositoryTarget(customRepository: any): Function|string|EntitySchema<any>|undefined {
-        const entityRepositoryMetadataArgs = getMetadataArgsStorage().entityRepositories.find(repository => {
-            return repository.target === (customRepository instanceof Function ? customRepository : (customRepository as any).constructor);
-        });
+    private getCustomRepositoryTarget(
+        customRepository: any
+    ): Function | string | EntitySchema<any> | undefined {
+        const entityRepositoryMetadataArgs = getMetadataArgsStorage().entityRepositories.find(
+            repository => {
+                return (
+                    repository.target ===
+                    (customRepository instanceof Function
+                        ? customRepository
+                        : (customRepository as any).constructor)
+                );
+            }
+        );
         if (!entityRepositoryMetadataArgs)
             throw new CustomRepositoryNotFoundError(customRepository);
 
         return entityRepositoryMetadataArgs.entity;
     }
-
 }

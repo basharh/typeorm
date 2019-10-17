@@ -1,11 +1,10 @@
-import {EntityMetadata} from "../metadata/EntityMetadata";
+import { EntityMetadata } from "../metadata/EntityMetadata";
 import { ObjectUtils } from "../util/ObjectUtils";
 
 /**
  */
 export class Alias {
-
-    type: "from"|"select"|"join"|"other"; // todo: make something with "other"
+    type: "from" | "select" | "join" | "other"; // todo: make something with "other"
 
     name: string;
 
@@ -26,7 +25,7 @@ export class Alias {
 
     private _metadata?: EntityMetadata;
 
-    get target(): Function|string {
+    get target(): Function | string {
         return this.metadata.target;
     }
 
@@ -40,9 +39,10 @@ export class Alias {
 
     get metadata(): EntityMetadata {
         if (!this._metadata)
-            throw new Error(`Cannot get entity metadata for the given alias "${this.name}"`);
+            throw new Error(
+                `Cannot get entity metadata for the given alias "${this.name}"`
+            );
 
         return this._metadata;
     }
-
 }

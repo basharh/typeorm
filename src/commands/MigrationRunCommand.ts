@@ -1,6 +1,6 @@
-import {createConnection} from "../index";
-import {ConnectionOptionsReader} from "../connection/ConnectionOptionsReader";
-import {Connection} from "../connection/Connection";
+import { createConnection } from "../index";
+import { ConnectionOptionsReader } from "../connection/ConnectionOptionsReader";
+import { Connection } from "../connection/Connection";
 import * as process from "process";
 import * as yargs from "yargs";
 const chalk = require("chalk");
@@ -9,7 +9,6 @@ const chalk = require("chalk");
  * Runs migration command.
  */
 export class MigrationRunCommand implements yargs.CommandModule {
-
     command = "migration:run";
     describe = "Runs all pending migrations.";
     aliases = "migrations:run";
@@ -24,7 +23,8 @@ export class MigrationRunCommand implements yargs.CommandModule {
             .option("transaction", {
                 alias: "t",
                 default: "default",
-                describe: "Indicates if transaction should be used or not for migration run. Enabled by default."
+                describe:
+                    "Indicates if transaction should be used or not for migration run. Enabled by default."
             })
             .option("config", {
                 alias: "f",
@@ -35,16 +35,20 @@ export class MigrationRunCommand implements yargs.CommandModule {
 
     async handler(args: yargs.Arguments) {
         if (args._[0] === "migrations:run") {
-            console.log("'migrations:run' is deprecated, please use 'migration:run' instead");
+            console.log(
+                "'migrations:run' is deprecated, please use 'migration:run' instead"
+            );
         }
 
-        let connection: Connection|undefined = undefined;
+        let connection: Connection | undefined = undefined;
         try {
             const connectionOptionsReader = new ConnectionOptionsReader({
                 root: process.cwd(),
                 configName: args.config as any
             });
-            const connectionOptions = await connectionOptionsReader.get(args.connection as any);
+            const connectionOptions = await connectionOptionsReader.get(
+                args.connection as any
+            );
             Object.assign(connectionOptions, {
                 subscribers: [],
                 synchronize: false,
@@ -61,7 +65,6 @@ export class MigrationRunCommand implements yargs.CommandModule {
             await connection.close();
             // exit process if no errors
             process.exit(0);
-
         } catch (err) {
             if (connection) await (connection as Connection).close();
 
@@ -70,5 +73,4 @@ export class MigrationRunCommand implements yargs.CommandModule {
             process.exit(1);
         }
     }
-
 }

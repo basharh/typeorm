@@ -1,6 +1,6 @@
-import {createConnection} from "../index";
-import {ConnectionOptionsReader} from "../connection/ConnectionOptionsReader";
-import {Connection} from "../connection/Connection";
+import { createConnection } from "../index";
+import { ConnectionOptionsReader } from "../connection/ConnectionOptionsReader";
+import { Connection } from "../connection/Connection";
 import * as yargs from "yargs";
 const chalk = require("chalk");
 
@@ -8,7 +8,6 @@ const chalk = require("chalk");
  * Clear cache command.
  */
 export class CacheClearCommand implements yargs.CommandModule {
-
     command = "cache:clear";
     describe = "Clears all data stored in query runner cache.";
 
@@ -27,14 +26,15 @@ export class CacheClearCommand implements yargs.CommandModule {
     }
 
     async handler(args: yargs.Arguments) {
-
-        let connection: Connection|undefined = undefined;
+        let connection: Connection | undefined = undefined;
         try {
             const connectionOptionsReader = new ConnectionOptionsReader({
                 root: process.cwd(),
                 configName: args.config as any
             });
-            const connectionOptions = await connectionOptionsReader.get(args.connection as any);
+            const connectionOptions = await connectionOptionsReader.get(
+                args.connection as any
+            );
             Object.assign(connectionOptions, {
                 subscribers: [],
                 synchronize: false,
@@ -45,7 +45,11 @@ export class CacheClearCommand implements yargs.CommandModule {
             connection = await createConnection(connectionOptions);
 
             if (!connection.queryResultCache) {
-                console.log(chalk.black.bgRed("Cache is not enabled. To use cache enable it in connection configuration."));
+                console.log(
+                    chalk.black.bgRed(
+                        "Cache is not enabled. To use cache enable it in connection configuration."
+                    )
+                );
                 return;
             }
 
@@ -53,7 +57,6 @@ export class CacheClearCommand implements yargs.CommandModule {
             console.log(chalk.green("Cache was successfully cleared"));
 
             if (connection) await connection.close();
-
         } catch (err) {
             if (connection) await (connection as Connection).close();
 
@@ -62,5 +65,4 @@ export class CacheClearCommand implements yargs.CommandModule {
             process.exit(1);
         }
     }
-
 }

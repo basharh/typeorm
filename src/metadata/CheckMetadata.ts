@@ -1,12 +1,11 @@
-import {EntityMetadata} from "./EntityMetadata";
-import {NamingStrategyInterface} from "../naming-strategy/NamingStrategyInterface";
-import {CheckMetadataArgs} from "../metadata-args/CheckMetadataArgs";
+import { EntityMetadata } from "./EntityMetadata";
+import { NamingStrategyInterface } from "../naming-strategy/NamingStrategyInterface";
+import { CheckMetadataArgs } from "../metadata-args/CheckMetadataArgs";
 
 /**
  * Check metadata contains all information about table's check constraints.
  */
 export class CheckMetadata {
-
     // ---------------------------------------------------------------------
     // Public Properties
     // ---------------------------------------------------------------------
@@ -19,7 +18,7 @@ export class CheckMetadata {
     /**
      * Target class to which metadata is applied.
      */
-    target?: Function|string;
+    target?: Function | string;
 
     /**
      * Check expression.
@@ -43,8 +42,8 @@ export class CheckMetadata {
     // ---------------------------------------------------------------------
 
     constructor(options: {
-        entityMetadata: EntityMetadata,
-        args?: CheckMetadataArgs
+        entityMetadata: EntityMetadata;
+        args?: CheckMetadataArgs;
     }) {
         this.entityMetadata = options.entityMetadata;
 
@@ -64,8 +63,12 @@ export class CheckMetadata {
      * Must be called after all entity metadata's properties map, columns and relations are built.
      */
     build(namingStrategy: NamingStrategyInterface): this {
-        this.name = this.givenName ? this.givenName : namingStrategy.checkConstraintName(this.entityMetadata.tablePath, this.expression);
+        this.name = this.givenName
+            ? this.givenName
+            : namingStrategy.checkConstraintName(
+                  this.entityMetadata.tablePath,
+                  this.expression
+              );
         return this;
     }
-
 }

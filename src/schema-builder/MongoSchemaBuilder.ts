@@ -19,13 +19,11 @@ import { MongodbIndexOptions } from "../driver/mongodb/typings";
  * 9. create indices which are missing in db yet, and drops indices which exist in the db, but does not exist in the metadata anymore
  */
 export class MongoSchemaBuilder implements SchemaBuilder {
-
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(protected connection: Connection) {
-    }
+    constructor(protected connection: Connection) {}
 
     // -------------------------------------------------------------------------
     // Public Methods
@@ -35,26 +33,43 @@ export class MongoSchemaBuilder implements SchemaBuilder {
      * Creates complete schemas for the given entity metadatas.
      */
     async build(): Promise<void> {
-        const queryRunner = (this.connection.driver as MongoDriver).createQueryRunner();
+        const queryRunner = (this.connection
+            .driver as MongoDriver).createQueryRunner();
         const promises: Promise<any>[] = [];
         this.connection.entityMetadatas.forEach(metadata => {
             metadata.indices.forEach(index => {
-                const options: MongodbIndexOptions = Object.assign({}, {
-                    name: index.name,
-                    unique: index.isUnique,
-                    sparse: index.isSparse,
-                    background: index.isBackground
-                }, index.expireAfterSeconds === undefined
-                    ? {}
-                    : { expireAfterSeconds: index.expireAfterSeconds });
-                promises.push(queryRunner.createCollectionIndex(metadata.tableName, index.columnNamesWithOrderingMap, options));
+                const options: MongodbIndexOptions = Object.assign(
+                    {},
+                    {
+                        name: index.name,
+                        unique: index.isUnique,
+                        sparse: index.isSparse,
+                        background: index.isBackground
+                    },
+                    index.expireAfterSeconds === undefined
+                        ? {}
+                        : { expireAfterSeconds: index.expireAfterSeconds }
+                );
+                promises.push(
+                    queryRunner.createCollectionIndex(
+                        metadata.tableName,
+                        index.columnNamesWithOrderingMap,
+                        options
+                    )
+                );
             });
             metadata.uniques.forEach(unique => {
                 const options = <MongodbIndexOptions>{
                     name: unique.name,
-                    unique: true,
+                    unique: true
                 };
-                promises.push(queryRunner.createCollectionIndex(metadata.tableName, unique.columnNamesWithOrderingMap, options));
+                promises.push(
+                    queryRunner.createCollectionIndex(
+                        metadata.tableName,
+                        unique.columnNamesWithOrderingMap,
+                        options
+                    )
+                );
             });
         });
         await Promise.all(promises);
@@ -66,5 +81,4 @@ export class MongoSchemaBuilder implements SchemaBuilder {
     log(): Promise<SqlInMemory> {
         return Promise.resolve(new SqlInMemory());
     }
-
 }

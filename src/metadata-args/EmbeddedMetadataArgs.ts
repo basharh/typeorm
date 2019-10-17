@@ -2,7 +2,6 @@
  * Arguments for EmbeddedMetadata class.
  */
 export interface EmbeddedMetadataArgs {
-
     /**
      * Class to which this column is applied.
      */
@@ -22,11 +21,10 @@ export interface EmbeddedMetadataArgs {
      * Prefix of the embedded, used instead of propertyName.
      * If set to empty string, then prefix is not set at all.
      */
-    prefix?: string|boolean;
+    prefix?: string | boolean;
 
     /**
      * Type of the class to be embedded.
      */
-    type: ((type?: any) => Function);
-
+    type: (type?: any) => Function;
 }

@@ -9,5 +9,4 @@ export class UpdateValuesMissingError extends Error {
         Object.setPrototypeOf(this, UpdateValuesMissingError.prototype);
         this.message = `Cannot perform update query because update values are not defined. Call "qb.set(...)" method to specify updated values.`;
     }
-
 }

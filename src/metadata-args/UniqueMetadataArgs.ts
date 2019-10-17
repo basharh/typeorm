@@ -2,11 +2,10 @@
  * Arguments for UniqueMetadata class.
  */
 export interface UniqueMetadataArgs {
-
     /**
      * Class to which index is applied.
      */
-    target: Function|string;
+    target: Function | string;
 
     /**
      * Unique constraint name.
@@ -16,5 +15,5 @@ export interface UniqueMetadataArgs {
     /**
      * Columns combination to be unique.
      */
-    columns?: ((object?: any) => (any[]|{ [key: string]: number }))|string[];
+    columns?: ((object?: any) => any[] | { [key: string]: number }) | string[];
 }

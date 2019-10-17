@@ -1,11 +1,11 @@
-import {AbstractSqliteDriver} from "../sqlite-abstract/AbstractSqliteDriver";
-import {NativescriptConnectionOptions} from "./NativescriptConnectionOptions";
-import {NativescriptQueryRunner} from "./NativescriptQueryRunner";
-import {QueryRunner} from "../../query-runner/QueryRunner";
-import {Connection} from "../../connection/Connection";
-import {DriverOptionNotSetError} from "../../error/DriverOptionNotSetError";
-import {DriverPackageNotInstalledError} from "../../error/DriverPackageNotInstalledError";
-import {ColumnType} from "../types/ColumnTypes";
+import { AbstractSqliteDriver } from "../sqlite-abstract/AbstractSqliteDriver";
+import { NativescriptConnectionOptions } from "./NativescriptConnectionOptions";
+import { NativescriptQueryRunner } from "./NativescriptQueryRunner";
+import { QueryRunner } from "../../query-runner/QueryRunner";
+import { Connection } from "../../connection/Connection";
+import { DriverOptionNotSetError } from "../../error/DriverOptionNotSetError";
+import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError";
+import { ColumnType } from "../types/ColumnTypes";
 
 /**
  * Organizes communication with sqlite DBMS within Nativescript.
@@ -48,7 +48,6 @@ export class NativescriptDriver extends AbstractSqliteDriver {
         this.loadDependencies();
     }
 
-
     // -------------------------------------------------------------------------
     // Public Methods
     // -------------------------------------------------------------------------
@@ -59,14 +58,17 @@ export class NativescriptDriver extends AbstractSqliteDriver {
     async disconnect(): Promise<void> {
         return new Promise<void>((ok, fail) => {
             this.queryRunner = undefined;
-            this.databaseConnection.close().then(ok).catch(fail);
+            this.databaseConnection
+                .close()
+                .then(ok)
+                .catch(fail);
         });
     }
 
     /**
      * Creates a query runner used to execute database queries.
      */
-    createQueryRunner(mode: "master"|"slave" = "master"): QueryRunner {
+    createQueryRunner(mode: "master" | "slave" = "master"): QueryRunner {
         if (!this.queryRunner) {
             this.queryRunner = new NativescriptQueryRunner(this);
         }
@@ -74,7 +76,12 @@ export class NativescriptDriver extends AbstractSqliteDriver {
         return this.queryRunner;
     }
 
-    normalizeType(column: { type?: ColumnType, length?: number | string, precision?: number|null, scale?: number }): string {
+    normalizeType(column: {
+        type?: ColumnType;
+        length?: number | string;
+        precision?: number | null;
+        scale?: number;
+    }): string {
         if ((column.type as any) === Buffer) {
             return "blob";
         }
@@ -90,9 +97,13 @@ export class NativescriptDriver extends AbstractSqliteDriver {
      */
     protected createDatabaseConnection() {
         return new Promise<void>((ok, fail) => {
-            const options = Object.assign({}, {
-                name: this.options.database,
-            }, this.options.extra || {});
+            const options = Object.assign(
+                {},
+                {
+                    name: this.options.database
+                },
+                this.options.extra || {}
+            );
 
             new this.sqlite(options.name, (err: Error, db: any): any => {
                 if (err) return fail(err);
@@ -100,14 +111,17 @@ export class NativescriptDriver extends AbstractSqliteDriver {
                 // use object mode to work with TypeORM
                 db.resultType(this.sqlite.RESULTSASOBJECT);
 
-
                 // we need to enable foreign keys in sqlite to make sure all foreign key related features
                 // working properly. this also makes onDelete work with sqlite.
-                db.execSQL(`PRAGMA foreign_keys = ON;`, [], (err: Error, result: any): any => {
-                    if (err) return fail(err);
-                    // We are all set
-                    ok(db);
-                });
+                db.execSQL(
+                    `PRAGMA foreign_keys = ON;`,
+                    [],
+                    (err: Error, result: any): any => {
+                        if (err) return fail(err);
+                        // We are all set
+                        ok(db);
+                    }
+                );
             });
         });
     }
@@ -118,7 +132,10 @@ export class NativescriptDriver extends AbstractSqliteDriver {
     protected loadDependencies(): void {
         this.sqlite = this.driver;
         if (!this.driver) {
-            throw new DriverPackageNotInstalledError("Nativescript", "nativescript-sqlite");
+            throw new DriverPackageNotInstalledError(
+                "Nativescript",
+                "nativescript-sqlite"
+            );
         }
     }
 }

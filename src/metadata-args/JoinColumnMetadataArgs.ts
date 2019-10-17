@@ -2,11 +2,10 @@
  * Arguments for JoinColumnMetadata class.
  */
 export interface JoinColumnMetadataArgs {
-
     /**
      * Class to which this column is applied.
      */
-    target: Function|string;
+    target: Function | string;
 
     /**
      * Class's property name to which this column is applied.
@@ -23,5 +22,4 @@ export interface JoinColumnMetadataArgs {
      * This is column property name, not a column database name.
      */
     referencedColumnName?: string;
-
 }

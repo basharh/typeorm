@@ -1,4 +1,4 @@
-import {RelationMetadata} from "../metadata/RelationMetadata";
+import { RelationMetadata } from "../metadata/RelationMetadata";
 
 /**
  * Thrown when relation has array initialized which is forbidden my ORM.
@@ -7,13 +7,12 @@ import {RelationMetadata} from "../metadata/RelationMetadata";
  * @see http://typeorm.io/#/relations-faq/avoid-relation-property-initializers
  */
 export class InitializedRelationError extends Error {
-
     constructor(relation: RelationMetadata) {
         super();
         Object.setPrototypeOf(this, InitializedRelationError.prototype);
-        this.message = `Array initializations are not allowed in entity relations. ` +
-                        `Please remove array initialization (= []) from "${relation.entityMetadata.targetName}#${relation.propertyPath}". ` +
-                        `This is ORM requirement to make relations to work properly. Refer docs for more information.`;
+        this.message =
+            `Array initializations are not allowed in entity relations. ` +
+            `Please remove array initialization (= []) from "${relation.entityMetadata.targetName}#${relation.propertyPath}". ` +
+            `This is ORM requirement to make relations to work properly. Refer docs for more information.`;
     }
-
 }

@@ -2,7 +2,6 @@
  * SqlServer specific connection credential options.
  */
 export interface SqlServerConnectionCredentialsOptions {
-
     /**
      * Connection url where perform connection to.
      */
@@ -37,5 +36,4 @@ export interface SqlServerConnectionCredentialsOptions {
      * Once you set domain, driver will connect to SQL Server using domain login.
      */
     readonly domain?: string;
-
 }

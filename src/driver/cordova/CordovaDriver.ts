@@ -1,21 +1,21 @@
-import {AbstractSqliteDriver} from "../sqlite-abstract/AbstractSqliteDriver";
-import {CordovaConnectionOptions} from "./CordovaConnectionOptions";
-import {CordovaQueryRunner} from "./CordovaQueryRunner";
-import {QueryRunner} from "../../query-runner/QueryRunner";
-import {Connection} from "../../connection/Connection";
-import {DriverOptionNotSetError} from "../../error/DriverOptionNotSetError";
-import {DriverPackageNotInstalledError} from "../../error/DriverPackageNotInstalledError";
+import { AbstractSqliteDriver } from "../sqlite-abstract/AbstractSqliteDriver";
+import { CordovaConnectionOptions } from "./CordovaConnectionOptions";
+import { CordovaQueryRunner } from "./CordovaQueryRunner";
+import { QueryRunner } from "../../query-runner/QueryRunner";
+import { Connection } from "../../connection/Connection";
+import { DriverOptionNotSetError } from "../../error/DriverOptionNotSetError";
+import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError";
 
 // needed for typescript compiler
 interface Window {
     sqlitePlugin: any;
 }
 
-declare var window: Window;
+declare let window: Window;
 
 export class CordovaDriver extends AbstractSqliteDriver {
     options: CordovaConnectionOptions;
-    
+
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
@@ -37,7 +37,6 @@ export class CordovaDriver extends AbstractSqliteDriver {
         // load sqlite package
         this.loadDependencies();
     }
-    
 
     // -------------------------------------------------------------------------
     // Public Methods
@@ -52,17 +51,16 @@ export class CordovaDriver extends AbstractSqliteDriver {
             this.databaseConnection.close(ok, fail);
         });
     }
-    
+
     /**
      * Creates a query runner used to execute database queries.
      */
-    createQueryRunner(mode: "master"|"slave" = "master"): QueryRunner {
-        if (!this.queryRunner)
-            this.queryRunner = new CordovaQueryRunner(this);
+    createQueryRunner(mode: "master" | "slave" = "master"): QueryRunner {
+        if (!this.queryRunner) this.queryRunner = new CordovaQueryRunner(this);
 
         return this.queryRunner;
     }
-    
+
     // -------------------------------------------------------------------------
     // Protected Methods
     // -------------------------------------------------------------------------
@@ -72,24 +70,37 @@ export class CordovaDriver extends AbstractSqliteDriver {
      */
     protected createDatabaseConnection() {
         return new Promise<void>((ok, fail) => {
-            const options = Object.assign({}, {
-                name: this.options.database,
-                location: this.options.location,
-            }, this.options.extra || {});
+            const options = Object.assign(
+                {},
+                {
+                    name: this.options.database,
+                    location: this.options.location
+                },
+                this.options.extra || {}
+            );
 
-            this.sqlite.openDatabase(options, (db: any) => {
-                const databaseConnection = db;
+            this.sqlite.openDatabase(
+                options,
+                (db: any) => {
+                    const databaseConnection = db;
 
-                // we need to enable foreign keys in sqlite to make sure all foreign key related features
-                // working properly. this also makes onDelete to work with sqlite.
-                databaseConnection.executeSql(`PRAGMA foreign_keys = ON;`, [], (result: any) => {
-                    ok(databaseConnection);
-                }, (error: any) => {
+                    // we need to enable foreign keys in sqlite to make sure all foreign key related features
+                    // working properly. this also makes onDelete to work with sqlite.
+                    databaseConnection.executeSql(
+                        `PRAGMA foreign_keys = ON;`,
+                        [],
+                        (result: any) => {
+                            ok(databaseConnection);
+                        },
+                        (error: any) => {
+                            fail(error);
+                        }
+                    );
+                },
+                (error: any) => {
                     fail(error);
-                });
-            }, (error: any) => {
-                fail(error);
-            });
+                }
+            );
         });
     }
 
@@ -99,9 +110,11 @@ export class CordovaDriver extends AbstractSqliteDriver {
     protected loadDependencies(): void {
         try {
             this.sqlite = window.sqlitePlugin;
-
         } catch (e) {
-            throw new DriverPackageNotInstalledError("Cordova-SQLite", "cordova-sqlite-storage");
+            throw new DriverPackageNotInstalledError(
+                "Cordova-SQLite",
+                "cordova-sqlite-storage"
+            );
         }
     }
 }

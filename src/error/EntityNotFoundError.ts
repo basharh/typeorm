@@ -1,5 +1,5 @@
-import {ObjectType} from "../common/ObjectType";
-import {EntitySchema} from "../index";
+import { ObjectType } from "../common/ObjectType";
+import { EntitySchema } from "../index";
 
 /**
  * Thrown when no result could be found in methods which are not allowed to return undefined or an empty set.
@@ -7,7 +7,10 @@ import {EntitySchema} from "../index";
 export class EntityNotFoundError extends Error {
     name = "EntityNotFound";
 
-    constructor(entityClass: ObjectType<any>|EntitySchema<any>|string, criteria: any) {
+    constructor(
+        entityClass: ObjectType<any> | EntitySchema<any> | string,
+        criteria: any
+    ) {
         super();
         Object.setPrototypeOf(this, EntityNotFoundError.prototype);
         let targetName: string;
@@ -25,8 +28,7 @@ export class EntityNotFoundError extends Error {
     private stringifyCriteria(criteria: any): string {
         try {
             return JSON.stringify(criteria, null, 4);
-        } catch (e) { }
+        } catch (e) {}
         return "" + criteria;
     }
-
 }

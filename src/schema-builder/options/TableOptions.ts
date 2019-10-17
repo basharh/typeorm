@@ -1,15 +1,14 @@
-import {TableColumnOptions} from "./TableColumnOptions";
-import {TableIndexOptions} from "./TableIndexOptions";
-import {TableForeignKeyOptions} from "./TableForeignKeyOptions";
-import {TableUniqueOptions} from "./TableUniqueOptions";
-import {TableCheckOptions} from "./TableCheckOptions";
-import {TableExclusionOptions} from "./TableExclusionOptions";
+import { TableColumnOptions } from "./TableColumnOptions";
+import { TableIndexOptions } from "./TableIndexOptions";
+import { TableForeignKeyOptions } from "./TableForeignKeyOptions";
+import { TableUniqueOptions } from "./TableUniqueOptions";
+import { TableCheckOptions } from "./TableCheckOptions";
+import { TableExclusionOptions } from "./TableExclusionOptions";
 
 /**
  * Table options.
  */
 export interface TableOptions {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -60,5 +59,4 @@ export interface TableOptions {
      * Table engine.
      */
     engine?: string;
-
 }

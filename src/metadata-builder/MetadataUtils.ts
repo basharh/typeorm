@@ -2,7 +2,6 @@
  * Metadata args utility functions.
  */
 export class MetadataUtils {
-
     /**
      * Gets given's entity all inherited classes.
      * Gives in order from parents to children.
@@ -33,9 +32,13 @@ export class MetadataUtils {
      * Filters given array of targets by a given classes.
      * If classes are not given, then it returns array itself.
      */
-    static filterByTarget<T extends { target?: any }>(array: T[], classes?: any[]): T[] {
+    static filterByTarget<T extends { target?: any }>(
+        array: T[],
+        classes?: any[]
+    ): T[] {
         if (!classes) return array;
-        return array.filter(item => item.target && classes.indexOf(item.target) !== -1);
+        return array.filter(
+            item => item.target && classes.indexOf(item.target) !== -1
+        );
     }
-
 }

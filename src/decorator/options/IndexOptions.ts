@@ -2,7 +2,6 @@
  * Describes all index options.
  */
 export interface IndexOptions {
-
     /**
      * Indicates if this composite index must be unique or not.
      */
@@ -43,5 +42,4 @@ export interface IndexOptions {
      * This option is only supported for mongodb database.
      */
     expireAfterSeconds?: number;
-
 }

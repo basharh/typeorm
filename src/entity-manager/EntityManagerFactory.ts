@@ -1,16 +1,15 @@
-import {Connection} from "../connection/Connection";
-import {EntityManager} from "./EntityManager";
-import {MongoEntityManager} from "./MongoEntityManager";
-import {MongoDriver} from "../driver/mongodb/MongoDriver";
-import {SqljsEntityManager} from "./SqljsEntityManager";
-import {SqljsDriver} from "../driver/sqljs/SqljsDriver";
-import {QueryRunner} from "../query-runner/QueryRunner";
+import { Connection } from "../connection/Connection";
+import { EntityManager } from "./EntityManager";
+import { MongoEntityManager } from "./MongoEntityManager";
+import { MongoDriver } from "../driver/mongodb/MongoDriver";
+import { SqljsEntityManager } from "./SqljsEntityManager";
+import { SqljsDriver } from "../driver/sqljs/SqljsDriver";
+import { QueryRunner } from "../query-runner/QueryRunner";
 
 /**
  * Helps to create entity managers.
  */
 export class EntityManagerFactory {
-
     /**
      * Creates a new entity manager depend on a given connection's driver.
      */
@@ -23,5 +22,4 @@ export class EntityManagerFactory {
 
         return new EntityManager(connection, queryRunner);
     }
-
 }

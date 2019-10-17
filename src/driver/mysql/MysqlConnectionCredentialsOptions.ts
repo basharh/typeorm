@@ -4,7 +4,6 @@
  * @see https://github.com/mysqljs/mysql#connection-options
  */
 export interface MysqlConnectionCredentialsOptions {
-
     /**
      * Connection url where perform connection to.
      */
@@ -39,5 +38,4 @@ export interface MysqlConnectionCredentialsOptions {
      * Object with ssl parameters or a string containing name of ssl profile.
      */
     readonly ssl?: any;
-
 }

@@ -1,10 +1,9 @@
-import {TableColumnOptions} from "../options/TableColumnOptions";
+import { TableColumnOptions } from "../options/TableColumnOptions";
 
 /**
  * Table's columns in the database represented in this class.
  */
 export class TableColumn {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -32,33 +31,33 @@ export class TableColumn {
     /**
      * Indicates if column is NULL, or is NOT NULL in the database.
      */
-    isNullable: boolean = false;
+    isNullable = false;
 
     /**
      * Indicates if column is auto-generated sequence.
      */
-    isGenerated: boolean = false;
+    isGenerated = false;
 
     /**
      * Specifies generation strategy if this column will use auto increment.
      * `rowid` option supported only in CockroachDB.
      */
-    generationStrategy?: "uuid"|"increment"|"rowid";
+    generationStrategy?: "uuid" | "increment" | "rowid";
 
     /**
      * Indicates if column is a primary key.
      */
-    isPrimary: boolean = false;
+    isPrimary = false;
 
     /**
      * Indicates if column has unique value.
      */
-    isUnique: boolean = false;
+    isUnique = false;
 
     /**
      * Indicates if column stores array.
      */
-    isArray: boolean = false;
+    isArray = false;
 
     /**
      * Column's comment.
@@ -69,7 +68,7 @@ export class TableColumn {
      * Column type's length. Used only on some column types.
      * For example type = "string" and length = "100" means that ORM will create a column with type varchar(100).
      */
-    length: string = "";
+    length = "";
 
     /**
      * Column type's display width. Used only on some column types in MySQL.
@@ -91,7 +90,7 @@ export class TableColumn {
      * The precision for a decimal (exact numeric) column (applies only for decimal column), which is the maximum
      * number of digits that are stored for the values.
      */
-    precision?: number|null;
+    precision?: number | null;
 
     /**
      * The scale for a decimal (exact numeric) column (applies only for decimal column), which represents the number
@@ -103,12 +102,12 @@ export class TableColumn {
      * Puts ZEROFILL attribute on to numeric column. Works only for MySQL.
      * If you specify ZEROFILL for a numeric column, MySQL automatically adds the UNSIGNED attribute to the column
      */
-    zerofill: boolean = false;
+    zerofill = false;
 
     /**
      * Puts UNSIGNED attribute on to numeric column. Works only for MySQL.
      */
-    unsigned: boolean = false;
+    unsigned = false;
 
     /**
      * Array of possible enumerated values.
@@ -123,7 +122,7 @@ export class TableColumn {
     /**
      * Generated column type. Supports only in MySQL.
      */
-    generatedType?: "VIRTUAL"|"STORED";
+    generatedType?: "VIRTUAL" | "STORED";
 
     /**
      * Spatial Feature Type (Geometry, Point, Polygon, etc.)
@@ -150,7 +149,7 @@ export class TableColumn {
             this.precision = options.precision;
             this.scale = options.scale;
             this.zerofill = options.zerofill || false;
-            this.unsigned = this.zerofill ? true : (options.unsigned || false);
+            this.unsigned = this.zerofill ? true : options.unsigned || false;
             this.default = options.default;
             this.onUpdate = options.onUpdate;
             this.isNullable = options.isNullable || false;
@@ -203,5 +202,4 @@ export class TableColumn {
             srid: this.srid
         });
     }
-
 }

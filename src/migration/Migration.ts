@@ -1,10 +1,9 @@
-import {MigrationInterface} from "./MigrationInterface";
+import { MigrationInterface } from "./MigrationInterface";
 
 /**
  * Represents entity of the migration in the database.
  */
 export class Migration {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -13,7 +12,7 @@ export class Migration {
      * Migration id.
      * Indicates order of the executed migrations.
      */
-    id: number|undefined;
+    id: number | undefined;
 
     /**
      * Timestamp of the migration.
@@ -34,11 +33,15 @@ export class Migration {
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(id: number|undefined, timestamp: number, name: string, instance?: MigrationInterface) {
+    constructor(
+        id: number | undefined,
+        timestamp: number,
+        name: string,
+        instance?: MigrationInterface
+    ) {
         this.id = id;
         this.timestamp = timestamp;
         this.name = name;
         this.instance = instance;
     }
-
 }

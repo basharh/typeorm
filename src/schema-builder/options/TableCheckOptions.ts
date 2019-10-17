@@ -2,7 +2,6 @@
  * Database's table check constraint options.
  */
 export interface TableCheckOptions {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -21,5 +20,4 @@ export interface TableCheckOptions {
      * Check expression.
      */
     expression?: string;
-
 }

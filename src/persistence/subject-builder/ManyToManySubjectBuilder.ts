@@ -1,8 +1,8 @@
-import {Subject} from "../Subject";
-import {OrmUtils} from "../../util/OrmUtils";
-import {ObjectLiteral} from "../../common/ObjectLiteral";
-import {RelationMetadata} from "../../metadata/RelationMetadata";
-import {EntityMetadata} from "../../metadata/EntityMetadata";
+import { Subject } from "../Subject";
+import { OrmUtils } from "../../util/OrmUtils";
+import { ObjectLiteral } from "../../common/ObjectLiteral";
+import { RelationMetadata } from "../../metadata/RelationMetadata";
+import { EntityMetadata } from "../../metadata/EntityMetadata";
 
 /**
  * Builds operations needs to be executed for many-to-many relations of the given subjects.
@@ -13,13 +13,11 @@ import {EntityMetadata} from "../../metadata/EntityMetadata";
  *             This operation requires updation of junction table.
  */
 export class ManyToManySubjectBuilder {
-
     // ---------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------
 
-    constructor(protected subjects: Subject[]) {
-    }
+    constructor(protected subjects: Subject[]) {}
 
     // ---------------------------------------------------------------------
     // Public Methods
@@ -30,17 +28,13 @@ export class ManyToManySubjectBuilder {
      */
     build(): void {
         this.subjects.forEach(subject => {
-
             // if subject doesn't have entity then no need to find something that should be inserted or removed
-            if (!subject.entity)
-                return;
+            if (!subject.entity) return;
 
             // go through all persistence enabled many-to-many relations and build subject operations for them
             subject.metadata.manyToManyRelations.forEach(relation => {
-
                 // skip relations for which persistence is disabled
-                if (relation.persistenceEnabled === false)
-                    return;
+                if (relation.persistenceEnabled === false) return;
 
                 this.buildForSubjectRelation(subject, relation);
             });
@@ -51,22 +45,20 @@ export class ManyToManySubjectBuilder {
      * Builds operations for removal of all many-to-many records of all many-to-many relations of the given subject.
      */
     buildForAllRemoval(subject: Subject) {
-
         // if subject does not have a database entity then it means it does not exist in the database
         // if it does not exist in the database then we don't have anything for deletion
-        if (!subject.databaseEntity)
-            return;
+        if (!subject.databaseEntity) return;
 
         // go through all persistence enabled many-to-many relations and build subject operations for them
         subject.metadata.manyToManyRelations.forEach(relation => {
-
             // skip relations for which persistence is disabled
-            if (relation.persistenceEnabled === false)
-                return;
+            if (relation.persistenceEnabled === false) return;
 
             // get all related entities (actually related entity relation ids) bind to this subject entity
             // by example: returns category ids of the post we are currently working with (subject.entity is post)
-            const relatedEntityRelationIdsInDatabase: ObjectLiteral[] = relation.getEntityValue(subject.databaseEntity!);
+            const relatedEntityRelationIdsInDatabase: ObjectLiteral[] = relation.getEntityValue(
+                subject.databaseEntity!
+            );
 
             // go through all related entities and create a new junction subject for each row in junction table
             relatedEntityRelationIdsInDatabase.forEach(relationId => {
@@ -74,7 +66,11 @@ export class ManyToManySubjectBuilder {
                     metadata: relation.junctionEntityMetadata!,
                     parentSubject: subject,
                     mustBeRemoved: true,
-                    identifier: this.buildJunctionIdentifier(subject, relation, relationId)
+                    identifier: this.buildJunctionIdentifier(
+                        subject,
+                        relation,
+                        relationId
+                    )
                 });
 
                 // we use unshift because we need to perform those operations before post deletion is performed
@@ -94,8 +90,10 @@ export class ManyToManySubjectBuilder {
      *
      * by example: subject is "post" entity we are saving here and relation is "categories" inside it here.
      */
-    protected buildForSubjectRelation(subject: Subject, relation: RelationMetadata) {
-
+    protected buildForSubjectRelation(
+        subject: Subject,
+        relation: RelationMetadata
+    ) {
         // load from db all relation ids of inverse entities that are "bind" to the subject's entity
         // this way we gonna check which relation ids are missing and which are new (e.g. inserted or removed)
         let databaseRelatedEntityIds: ObjectLiteral[] = [];
@@ -103,24 +101,31 @@ export class ManyToManySubjectBuilder {
         // if subject don't have database entity it means all related entities in persisted subject are new and must be bind
         // and we don't need to remove something that is not exist
         if (subject.databaseEntity)
-            databaseRelatedEntityIds = relation.getEntityValue(subject.databaseEntity);
+            databaseRelatedEntityIds = relation.getEntityValue(
+                subject.databaseEntity
+            );
 
         // extract entity's relation value
         // by example: categories inside our post (subject.entity is post)
-        let relatedEntities: ObjectLiteral[] = relation.getEntityValue(subject.entity!);
-        if (relatedEntities === null) // if value set to null its equal if we set it to empty array - all items must be removed from the database
+        let relatedEntities: ObjectLiteral[] = relation.getEntityValue(
+            subject.entity!
+        );
+        if (relatedEntities === null)
+            // if value set to null its equal if we set it to empty array - all items must be removed from the database
             relatedEntities = [];
-        if (!(relatedEntities instanceof Array))
-            return;
+        if (!(relatedEntities instanceof Array)) return;
 
         // from all related entities find only those which aren't found in the db - for them we will create operation subjects
-        relatedEntities.forEach(relatedEntity => { // by example: relatedEntity is category from categories saved with post
+        relatedEntities.forEach(relatedEntity => {
+            // by example: relatedEntity is category from categories saved with post
 
             // todo: check how it will work for entities which are saved by cascades, but aren't saved in the database yet
 
             // extract only relation id from the related entities, since we only need it for comparision
             // by example: extract from category only relation id (category id, or let's say category title, depend on join column options)
-            let relatedEntityRelationIdMap = relation.inverseEntityMetadata!.getEntityIdMap(relatedEntity);
+            let relatedEntityRelationIdMap = relation.inverseEntityMetadata!.getEntityIdMap(
+                relatedEntity
+            );
 
             // try to find a subject of this related entity, maybe it was loaded or was marked for persistence
             const relatedEntitySubject = this.subjects.find(subject => {
@@ -133,7 +138,6 @@ export class ManyToManySubjectBuilder {
 
             // if related entity relation id map is empty it means related entity is newly persisted
             if (!relatedEntityRelationIdMap) {
-
                 // we decided to remove this error because it brings complications when saving object with non-saved entities
                 // if related entity does not have a subject then it means user tries to bind entity which wasn't saved
                 // in this persistence because he didn't pass this entity for save or he did not set cascades
@@ -143,35 +147,42 @@ export class ManyToManySubjectBuilder {
                 //     throw new Error(`Many-to-many relation "${relation.entityMetadata.name}.${relation.propertyPath}" contains ` +
                 //         `entities which do not exist in the database yet, thus they cannot be bind in the database. ` +
                 //         `Please setup cascade insertion or save entities before binding it.`);
-                if (!relatedEntitySubject)
-                    return;
+                if (!relatedEntitySubject) return;
             }
 
             // try to find related entity in the database
             // by example: find post's category in the database post's categories
-            const relatedEntityExistInDatabase = databaseRelatedEntityIds.find(databaseRelatedEntityRelationId => {
-                return EntityMetadata.compareIds(databaseRelatedEntityRelationId, relatedEntityRelationIdMap);
-            });
+            const relatedEntityExistInDatabase = databaseRelatedEntityIds.find(
+                databaseRelatedEntityRelationId => {
+                    return EntityMetadata.compareIds(
+                        databaseRelatedEntityRelationId,
+                        relatedEntityRelationIdMap
+                    );
+                }
+            );
 
             // if entity is found then don't do anything - it means binding in junction table already exist, we don't need to add anything
-            if (relatedEntityExistInDatabase)
-                return;
+            if (relatedEntityExistInDatabase) return;
 
-            const ownerValue = relation.isOwning ? subject : (relatedEntitySubject || relatedEntity); // by example: ownerEntityMap is post from subject here
-            const inverseValue = relation.isOwning ? (relatedEntitySubject || relatedEntity) : subject; // by example: inverseEntityMap is category from categories array here
+            const ownerValue = relation.isOwning
+                ? subject
+                : relatedEntitySubject || relatedEntity; // by example: ownerEntityMap is post from subject here
+            const inverseValue = relation.isOwning
+                ? relatedEntitySubject || relatedEntity
+                : subject; // by example: inverseEntityMap is category from categories array here
 
             // create a new subject for insert operation of junction rows
             const junctionSubject = new Subject({
                 metadata: relation.junctionEntityMetadata!,
                 parentSubject: subject,
-                canBeInserted: true,
+                canBeInserted: true
             });
             this.subjects.push(junctionSubject);
 
             relation.junctionEntityMetadata!.ownerColumns.forEach(column => {
                 junctionSubject.changeMaps.push({
                     column: column,
-                    value: ownerValue,
+                    value: ownerValue
                     // valueFactory: (value) => column.referencedColumn!.getEntityValue(value) // column.referencedColumn!.getEntityValue(ownerEntityMap),
                 });
             });
@@ -179,7 +190,7 @@ export class ManyToManySubjectBuilder {
             relation.junctionEntityMetadata!.inverseColumns.forEach(column => {
                 junctionSubject.changeMaps.push({
                     column: column,
-                    value: inverseValue,
+                    value: inverseValue
                     // valueFactory: (value) => column.referencedColumn!.getEntityValue(value) // column.referencedColumn!.getEntityValue(inverseEntityMap),
                 });
             });
@@ -189,7 +200,9 @@ export class ManyToManySubjectBuilder {
         const changedInverseEntityRelationIds: ObjectLiteral[] = [];
         relatedEntities.forEach(relatedEntity => {
             // relation.inverseEntityMetadata!.getEntityIdMap(relatedEntity)
-            let relatedEntityRelationIdMap = relation.inverseEntityMetadata!.getEntityIdMap(relatedEntity);
+            let relatedEntityRelationIdMap = relation.inverseEntityMetadata!.getEntityIdMap(
+                relatedEntity
+            );
 
             // try to find a subject of this related entity, maybe it was loaded or was marked for persistence
             const relatedEntitySubject = this.subjects.find(subject => {
@@ -200,16 +213,28 @@ export class ManyToManySubjectBuilder {
             if (relatedEntitySubject)
                 relatedEntityRelationIdMap = relatedEntitySubject.identifier;
 
-            if (relatedEntityRelationIdMap !== undefined && relatedEntityRelationIdMap !== null)
-                changedInverseEntityRelationIds.push(relatedEntityRelationIdMap);
+            if (
+                relatedEntityRelationIdMap !== undefined &&
+                relatedEntityRelationIdMap !== null
+            )
+                changedInverseEntityRelationIds.push(
+                    relatedEntityRelationIdMap
+                );
         });
 
         // now from all entities in the persisted entity find only those which aren't found in the db
-        const removedJunctionEntityIds = databaseRelatedEntityIds.filter(existRelationId => {
-            return !changedInverseEntityRelationIds.find(changedRelationId => {
-                return EntityMetadata.compareIds(changedRelationId, existRelationId);
-            });
-        });
+        const removedJunctionEntityIds = databaseRelatedEntityIds.filter(
+            existRelationId => {
+                return !changedInverseEntityRelationIds.find(
+                    changedRelationId => {
+                        return EntityMetadata.compareIds(
+                            changedRelationId,
+                            existRelationId
+                        );
+                    }
+                );
+            }
+        );
 
         // finally create a new junction remove operations for missing related entities
         removedJunctionEntityIds.forEach(removedEntityRelationId => {
@@ -217,7 +242,11 @@ export class ManyToManySubjectBuilder {
                 metadata: relation.junctionEntityMetadata!,
                 parentSubject: subject,
                 mustBeRemoved: true,
-                identifier: this.buildJunctionIdentifier(subject, relation, removedEntityRelationId)
+                identifier: this.buildJunctionIdentifier(
+                    subject,
+                    relation,
+                    removedEntityRelationId
+                )
             });
             this.subjects.push(junctionSubject);
         });
@@ -227,18 +256,33 @@ export class ManyToManySubjectBuilder {
      * Creates identifiers for junction table.
      * Example: { postId: 1, categoryId: 2 }
      */
-    protected buildJunctionIdentifier(subject: Subject, relation: RelationMetadata, relationId: ObjectLiteral) {
+    protected buildJunctionIdentifier(
+        subject: Subject,
+        relation: RelationMetadata,
+        relationId: ObjectLiteral
+    ) {
         const ownerEntityMap = relation.isOwning ? subject.entity! : relationId;
-        const inverseEntityMap = relation.isOwning ? relationId : subject.entity!;
+        const inverseEntityMap = relation.isOwning
+            ? relationId
+            : subject.entity!;
 
         const identifier: ObjectLiteral = {};
         relation.junctionEntityMetadata!.ownerColumns.forEach(column => {
-            OrmUtils.mergeDeep(identifier, column.createValueMap(column.referencedColumn!.getEntityValue(ownerEntityMap)));
+            OrmUtils.mergeDeep(
+                identifier,
+                column.createValueMap(
+                    column.referencedColumn!.getEntityValue(ownerEntityMap)
+                )
+            );
         });
         relation.junctionEntityMetadata!.inverseColumns.forEach(column => {
-            OrmUtils.mergeDeep(identifier, column.createValueMap(column.referencedColumn!.getEntityValue(inverseEntityMap)));
+            OrmUtils.mergeDeep(
+                identifier,
+                column.createValueMap(
+                    column.referencedColumn!.getEntityValue(inverseEntityMap)
+                )
+            );
         });
         return identifier;
     }
-
 }

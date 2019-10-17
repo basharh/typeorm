@@ -2,7 +2,6 @@
  * Special options passed to Repository#remove and Repository#delete methods.
  */
 export interface RemoveOptions {
-
     /**
      * Additional data to be passed with remove method.
      * This data can be used in subscribers then.
@@ -28,5 +27,4 @@ export interface RemoveOptions {
      * This option is needed to perform very big insertions when you have issues with underlying driver parameter number limitation.
      */
     chunk?: number;
-
 }

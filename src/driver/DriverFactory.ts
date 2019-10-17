@@ -1,30 +1,29 @@
-import {MissingDriverError} from "../error/MissingDriverError";
-import {CockroachDriver} from "./cockroachdb/CockroachDriver";
-import {MongoDriver} from "./mongodb/MongoDriver";
-import {SqlServerDriver} from "./sqlserver/SqlServerDriver";
-import {OracleDriver} from "./oracle/OracleDriver";
-import {SqliteDriver} from "./sqlite/SqliteDriver";
-import {CordovaDriver} from "./cordova/CordovaDriver";
-import {ReactNativeDriver} from "./react-native/ReactNativeDriver";
-import {NativescriptDriver} from "./nativescript/NativescriptDriver";
-import {SqljsDriver} from "./sqljs/SqljsDriver";
-import {MysqlDriver} from "./mysql/MysqlDriver";
-import {PostgresDriver} from "./postgres/PostgresDriver";
-import {ExpoDriver} from "./expo/ExpoDriver";
-import {AuroraDataApiDriver} from "./aurora-data-api/AuroraDataApiDriver";
-import {Driver} from "./Driver";
-import {Connection} from "../connection/Connection";
+import { MissingDriverError } from "../error/MissingDriverError";
+import { CockroachDriver } from "./cockroachdb/CockroachDriver";
+import { MongoDriver } from "./mongodb/MongoDriver";
+import { SqlServerDriver } from "./sqlserver/SqlServerDriver";
+import { OracleDriver } from "./oracle/OracleDriver";
+import { SqliteDriver } from "./sqlite/SqliteDriver";
+import { CordovaDriver } from "./cordova/CordovaDriver";
+import { ReactNativeDriver } from "./react-native/ReactNativeDriver";
+import { NativescriptDriver } from "./nativescript/NativescriptDriver";
+import { SqljsDriver } from "./sqljs/SqljsDriver";
+import { MysqlDriver } from "./mysql/MysqlDriver";
+import { PostgresDriver } from "./postgres/PostgresDriver";
+import { ExpoDriver } from "./expo/ExpoDriver";
+import { AuroraDataApiDriver } from "./aurora-data-api/AuroraDataApiDriver";
+import { Driver } from "./Driver";
+import { Connection } from "../connection/Connection";
 
 /**
  * Helps to create drivers.
  */
 export class DriverFactory {
-
     /**
      * Creates a new driver depend on a given connection's driver type.
      */
     create(connection: Connection): Driver {
-        const {type} = connection.options;
+        const { type } = connection.options;
         switch (type) {
             case "mysql":
                 return new MysqlDriver(connection);
@@ -58,5 +57,4 @@ export class DriverFactory {
                 throw new MissingDriverError(type);
         }
     }
-
 }

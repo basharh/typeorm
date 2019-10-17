@@ -31,7 +31,6 @@
  * };
  */
 export interface JoinOptions {
-
     /**
      * Alias of the main entity.
      */
@@ -56,5 +55,4 @@ export interface JoinOptions {
      * Array of columns to INNER JOIN.
      */
     innerJoin?: { [key: string]: string };
-
 }

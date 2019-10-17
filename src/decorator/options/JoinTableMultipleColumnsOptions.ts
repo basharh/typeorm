@@ -1,10 +1,9 @@
-import {JoinColumnOptions} from "./JoinColumnOptions";
+import { JoinColumnOptions } from "./JoinColumnOptions";
 
 /**
  * Describes all join table with multiple column options.
  */
 export interface JoinTableMultipleColumnsOptions {
-
     /**
      * Name of the table that will be created to store values of the both tables (join table).
      * By default is auto generated.
@@ -32,5 +31,4 @@ export interface JoinTableMultipleColumnsOptions {
      * Works only in some databases (like postgres and mssql).
      */
     schema?: string;
-
 }

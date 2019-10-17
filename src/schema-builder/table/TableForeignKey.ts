@@ -1,11 +1,10 @@
-import {ForeignKeyMetadata} from "../../metadata/ForeignKeyMetadata";
-import {TableForeignKeyOptions} from "../options/TableForeignKeyOptions";
+import { ForeignKeyMetadata } from "../../metadata/ForeignKeyMetadata";
+import { TableForeignKeyOptions } from "../options/TableForeignKeyOptions";
 
 /**
  * Foreign key from the database stored in this class.
  */
 export class TableForeignKey {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -43,7 +42,7 @@ export class TableForeignKey {
     onUpdate?: string;
 
     /**
-     * Set this foreign key constraint as "DEFERRABLE" e.g. check constraints at start 
+     * Set this foreign key constraint as "DEFERRABLE" e.g. check constraints at start
      * or at the end of a transaction
      */
     deferrable?: string;
@@ -77,7 +76,7 @@ export class TableForeignKey {
             referencedTableName: this.referencedTableName,
             onDelete: this.onDelete,
             onUpdate: this.onUpdate,
-            deferrable: this.deferrable,
+            deferrable: this.deferrable
         });
     }
 
@@ -96,8 +95,7 @@ export class TableForeignKey {
             referencedTableName: metadata.referencedTablePath,
             onDelete: metadata.onDelete,
             onUpdate: metadata.onUpdate,
-            deferrable: metadata.deferrable,
+            deferrable: metadata.deferrable
         });
     }
-
 }

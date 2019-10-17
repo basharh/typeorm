@@ -6,8 +6,10 @@ export class LockNotSupportedOnGivenDriverError extends Error {
 
     constructor() {
         super();
-        Object.setPrototypeOf(this, LockNotSupportedOnGivenDriverError.prototype);
+        Object.setPrototypeOf(
+            this,
+            LockNotSupportedOnGivenDriverError.prototype
+        );
         this.message = `Locking not supported on given driver.`;
     }
-
 }

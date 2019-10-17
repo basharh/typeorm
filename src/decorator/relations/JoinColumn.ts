@@ -1,5 +1,5 @@
-import {getMetadataArgsStorage, JoinColumnOptions} from "../../";
-import {JoinColumnMetadataArgs} from "../../metadata-args/JoinColumnMetadataArgs";
+import { getMetadataArgsStorage, JoinColumnOptions } from "../../";
+import { JoinColumnMetadataArgs } from "../../metadata-args/JoinColumnMetadataArgs";
 
 /**
  * JoinColumn decorator used on one-to-one relations to specify owner side of relationship.
@@ -27,9 +27,14 @@ export function JoinColumn(options: JoinColumnOptions[]): Function;
  * It also can be used on both one-to-one and many-to-one relations to specify custom column name
  * or custom referenced column.
  */
-export function JoinColumn(optionsOrOptionsArray?: JoinColumnOptions|JoinColumnOptions[]): Function {
-    return function (object: Object, propertyName: string) {
-        const options = optionsOrOptionsArray instanceof Array ? optionsOrOptionsArray : [optionsOrOptionsArray || {}];
+export function JoinColumn(
+    optionsOrOptionsArray?: JoinColumnOptions | JoinColumnOptions[]
+): Function {
+    return function(object: Record<string, any>, propertyName: string) {
+        const options =
+            optionsOrOptionsArray instanceof Array
+                ? optionsOrOptionsArray
+                : [optionsOrOptionsArray || {}];
         options.forEach(options => {
             getMetadataArgsStorage().joinColumns.push({
                 target: object.constructor,

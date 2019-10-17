@@ -9,5 +9,4 @@ export class TransactionAlreadyStartedError extends Error {
         Object.setPrototypeOf(this, TransactionAlreadyStartedError.prototype);
         this.message = `Transaction already started for the given connection, commit current transaction before starting a new one.`;
     }
-
 }

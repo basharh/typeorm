@@ -1,6 +1,6 @@
-import {Logger} from "./Logger";
-import {QueryRunner} from "../";
-import {PlatformTools} from "../platform/PlatformTools";
+import { Logger } from "./Logger";
+import { QueryRunner } from "../";
+import { PlatformTools } from "../platform/PlatformTools";
 
 /**
  * Performs logging of the events in TypeORM via debug library.
@@ -13,11 +13,11 @@ export class DebugLogger implements Logger {
     private debugQuerySlow = this.debug("typeorm:query:slow");
     private debugSchemaBuild = this.debug("typeorm:schema");
     private debugMigration = this.debug("typeorm:migration");
-    
+
     private debugLog = this.debug("typeorm:log");
     private debugInfo = this.debug("typeorm:info");
     private debugWarn = this.debug("typeorm:warn");
-    
+
     /**
      * Logs query and parameters used in it.
      */
@@ -29,11 +29,16 @@ export class DebugLogger implements Logger {
             }
         }
     }
-    
+
     /**
      * Logs query that failed.
      */
-    logQueryError(error: string, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+    logQueryError(
+        error: string,
+        query: string,
+        parameters?: any[],
+        queryRunner?: QueryRunner
+    ) {
         if (this.debugQueryError.enabled) {
             this.debugQueryError(PlatformTools.highlightSql(query) + ";");
             if (parameters && parameters.length) {
@@ -42,11 +47,16 @@ export class DebugLogger implements Logger {
             this.debugQueryError("error: ", error);
         }
     }
-    
+
     /**
      * Logs query that is slow.
      */
-    logQuerySlow(time: number, query: string, parameters?: any[], queryRunner?: QueryRunner) {
+    logQuerySlow(
+        time: number,
+        query: string,
+        parameters?: any[],
+        queryRunner?: QueryRunner
+    ) {
         if (this.debugQuerySlow.enabled) {
             this.debugQuerySlow(PlatformTools.highlightSql(query) + ";");
             if (parameters && parameters.length) {
@@ -55,7 +65,7 @@ export class DebugLogger implements Logger {
             this.debugQuerySlow("execution time:", time);
         }
     }
-    
+
     /**
      * Logs events from the schema build process.
      */
@@ -64,7 +74,7 @@ export class DebugLogger implements Logger {
             this.debugSchemaBuild(message);
         }
     }
-    
+
     /**
      * Logs events from the migration run process.
      */
@@ -73,12 +83,16 @@ export class DebugLogger implements Logger {
             this.debugMigration(message);
         }
     }
-    
+
     /**
      * Perform logging using given logger.
      * Log has its own level and message.
      */
-    log(level: "log" | "info" | "warn", message: any, queryRunner?: QueryRunner) {
+    log(
+        level: "log" | "info" | "warn",
+        message: any,
+        queryRunner?: QueryRunner
+    ) {
         switch (level) {
             case "log":
                 if (this.debugLog.enabled) {

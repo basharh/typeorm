@@ -1,13 +1,12 @@
-import {RelationCountMetadataArgs} from "../metadata-args/RelationCountMetadataArgs";
-import {EntityMetadata} from "./EntityMetadata";
-import {RelationMetadata} from "./RelationMetadata";
-import {SelectQueryBuilder} from "../query-builder/SelectQueryBuilder";
+import { RelationCountMetadataArgs } from "../metadata-args/RelationCountMetadataArgs";
+import { EntityMetadata } from "./EntityMetadata";
+import { RelationMetadata } from "./RelationMetadata";
+import { SelectQueryBuilder } from "../query-builder/SelectQueryBuilder";
 
 /**
  * Contains all information about entity's relation count.
  */
 export class RelationCountMetadata {
-
     // ---------------------------------------------------------------------
     // Public Properties
     // ---------------------------------------------------------------------
@@ -25,12 +24,12 @@ export class RelationCountMetadata {
     /**
      * Relation name which need to count.
      */
-    relationNameOrFactory: string|((object: any) => any);
+    relationNameOrFactory: string | ((object: any) => any);
 
     /**
      * Target class to which metadata is applied.
      */
-    target: Function|string;
+    target: Function | string;
 
     /**
      * Target's property name to which this metadata is applied.
@@ -45,15 +44,17 @@ export class RelationCountMetadata {
     /**
      * Extra condition applied to "ON" section of join.
      */
-    queryBuilderFactory?: (qb: SelectQueryBuilder<any>) => SelectQueryBuilder<any>;
+    queryBuilderFactory?: (
+        qb: SelectQueryBuilder<any>
+    ) => SelectQueryBuilder<any>;
 
     // ---------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------
 
     constructor(options: {
-        entityMetadata: EntityMetadata,
-        args: RelationCountMetadataArgs
+        entityMetadata: EntityMetadata;
+        args: RelationCountMetadataArgs;
     }) {
         this.entityMetadata = options.entityMetadata;
         this.target = options.args.target;
@@ -72,12 +73,18 @@ export class RelationCountMetadata {
      * This builder method should be used only after entity metadata, its properties map and all relations are build.
      */
     build() {
-        const propertyPath = this.relationNameOrFactory instanceof Function ? this.relationNameOrFactory(this.entityMetadata.propertiesMap) : this.relationNameOrFactory;
-        const relation = this.entityMetadata.findRelationWithPropertyPath(propertyPath);
+        const propertyPath =
+            this.relationNameOrFactory instanceof Function
+                ? this.relationNameOrFactory(this.entityMetadata.propertiesMap)
+                : this.relationNameOrFactory;
+        const relation = this.entityMetadata.findRelationWithPropertyPath(
+            propertyPath
+        );
         if (!relation)
-            throw new Error(`Cannot find relation ${propertyPath}. Wrong relation specified for @RelationCount decorator.`);
+            throw new Error(
+                `Cannot find relation ${propertyPath}. Wrong relation specified for @RelationCount decorator.`
+            );
 
         this.relation = relation;
     }
-
 }

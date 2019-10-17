@@ -1,10 +1,9 @@
 /**
  * Describes all entity view's options.
  */
-import {Connection, SelectQueryBuilder} from "../..";
+import { Connection, SelectQueryBuilder } from "../..";
 
 export interface ViewEntityOptions {
-
     /**
      * View name.
      * If not specified then naming strategy will generate view name from class name.
@@ -14,7 +13,7 @@ export interface ViewEntityOptions {
     /**
      * View expression.
      */
-    expression?: string|((connection: Connection) => SelectQueryBuilder<any>);
+    expression?: string | ((connection: Connection) => SelectQueryBuilder<any>);
 
     /**
      * Database name. Used in Mysql and Sql Server.

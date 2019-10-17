@@ -1,5 +1,5 @@
-import {CommandUtils} from "./CommandUtils";
-import {ObjectLiteral} from "../common/ObjectLiteral";
+import { CommandUtils } from "./CommandUtils";
+import { ObjectLiteral } from "../common/ObjectLiteral";
 import * as path from "path";
 import * as yargs from "yargs";
 const chalk = require("chalk");
@@ -9,7 +9,8 @@ const chalk = require("chalk");
  */
 export class InitCommand implements yargs.CommandModule {
     command = "init";
-    describe = "Generates initial TypeORM project structure. " +
+    describe =
+        "Generates initial TypeORM project structure. " +
         "If name specified then creates files inside directory called as name. " +
         "If its not specified then creates files inside current directory.";
 
@@ -29,49 +30,103 @@ export class InitCommand implements yargs.CommandModule {
                 describe: "Database type you'll use in your project."
             })
             .option("express", {
-                describe: "Indicates if express should be included in the project."
+                describe:
+                    "Indicates if express should be included in the project."
             })
             .option("docker", {
-                describe: "Set to true if docker-compose must be generated as well. False by default."
+                describe:
+                    "Set to true if docker-compose must be generated as well. False by default."
             });
     }
 
     async handler(args: yargs.Arguments) {
         try {
-            const database: string = args.database as any || "mysql";
+            const database: string = (args.database as any) || "mysql";
             const isExpress = args.express !== undefined ? true : false;
             const isDocker = args.docker !== undefined ? true : false;
-            const basePath = process.cwd() + (args.name ? ("/" + args.name) : "");
-            const projectName = args.name ? path.basename(args.name as any) : undefined;
-            await CommandUtils.createFile(basePath + "/package.json", InitCommand.getPackageJsonTemplate(projectName), false);
+            const basePath = process.cwd() + (args.name ? "/" + args.name : "");
+            const projectName = args.name
+                ? path.basename(args.name as any)
+                : undefined;
+            await CommandUtils.createFile(
+                basePath + "/package.json",
+                InitCommand.getPackageJsonTemplate(projectName),
+                false
+            );
             if (isDocker)
-                await CommandUtils.createFile(basePath + "/docker-compose.yml", InitCommand.getDockerComposeTemplate(database), false);
-            await CommandUtils.createFile(basePath + "/.gitignore", InitCommand.getGitIgnoreFile());
-            await CommandUtils.createFile(basePath + "/README.md", InitCommand.getReadmeTemplate({ docker: isDocker }), false);
-            await CommandUtils.createFile(basePath + "/tsconfig.json", InitCommand.getTsConfigTemplate());
-            await CommandUtils.createFile(basePath + "/ormconfig.json", InitCommand.getOrmConfigTemplate(database));
-            await CommandUtils.createFile(basePath + "/src/entity/User.ts", InitCommand.getUserEntityTemplate(database));
-            await CommandUtils.createFile(basePath + "/src/index.ts", InitCommand.getAppIndexTemplate(isExpress));
+                await CommandUtils.createFile(
+                    basePath + "/docker-compose.yml",
+                    InitCommand.getDockerComposeTemplate(database),
+                    false
+                );
+            await CommandUtils.createFile(
+                basePath + "/.gitignore",
+                InitCommand.getGitIgnoreFile()
+            );
+            await CommandUtils.createFile(
+                basePath + "/README.md",
+                InitCommand.getReadmeTemplate({ docker: isDocker }),
+                false
+            );
+            await CommandUtils.createFile(
+                basePath + "/tsconfig.json",
+                InitCommand.getTsConfigTemplate()
+            );
+            await CommandUtils.createFile(
+                basePath + "/ormconfig.json",
+                InitCommand.getOrmConfigTemplate(database)
+            );
+            await CommandUtils.createFile(
+                basePath + "/src/entity/User.ts",
+                InitCommand.getUserEntityTemplate(database)
+            );
+            await CommandUtils.createFile(
+                basePath + "/src/index.ts",
+                InitCommand.getAppIndexTemplate(isExpress)
+            );
             await CommandUtils.createDirectories(basePath + "/src/migration");
 
             // generate extra files for express application
             if (isExpress) {
-                await CommandUtils.createFile(basePath + "/src/routes.ts", InitCommand.getRoutesTemplate());
-                await CommandUtils.createFile(basePath + "/src/controller/UserController.ts", InitCommand.getControllerTemplate());
+                await CommandUtils.createFile(
+                    basePath + "/src/routes.ts",
+                    InitCommand.getRoutesTemplate()
+                );
+                await CommandUtils.createFile(
+                    basePath + "/src/controller/UserController.ts",
+                    InitCommand.getControllerTemplate()
+                );
             }
 
-            const packageJsonContents = await CommandUtils.readFile(basePath + "/package.json");
-            await CommandUtils.createFile(basePath + "/package.json", InitCommand.appendPackageJson(packageJsonContents, database, isExpress));
+            const packageJsonContents = await CommandUtils.readFile(
+                basePath + "/package.json"
+            );
+            await CommandUtils.createFile(
+                basePath + "/package.json",
+                InitCommand.appendPackageJson(
+                    packageJsonContents,
+                    database,
+                    isExpress
+                )
+            );
 
             if (args.name) {
-                console.log(chalk.green(`Project created inside ${chalk.blue(basePath)} directory.`));
-
+                console.log(
+                    chalk.green(
+                        `Project created inside ${chalk.blue(
+                            basePath
+                        )} directory.`
+                    )
+                );
             } else {
-                console.log(chalk.green(`Project created inside current directory.`));
+                console.log(
+                    chalk.green(`Project created inside current directory.`)
+                );
             }
-
         } catch (err) {
-            console.log(chalk.black.bgRed("Error during project initialization:"));
+            console.log(
+                chalk.black.bgRed("Error during project initialization:")
+            );
             console.error(err);
             process.exit(1);
         }
@@ -85,7 +140,7 @@ export class InitCommand implements yargs.CommandModule {
      * Gets contents of the ormconfig file.
      */
     protected static getOrmConfigTemplate(database: string): string {
-        const options: ObjectLiteral = { };
+        const options: ObjectLiteral = {};
         switch (database) {
             case "mysql":
                 Object.assign(options, {
@@ -94,7 +149,7 @@ export class InitCommand implements yargs.CommandModule {
                     port: 3306,
                     username: "test",
                     password: "test",
-                    database: "test",
+                    database: "test"
                 });
                 break;
             case "mariadb":
@@ -104,73 +159,67 @@ export class InitCommand implements yargs.CommandModule {
                     port: 3306,
                     username: "test",
                     password: "test",
-                    database: "test",
+                    database: "test"
                 });
                 break;
             case "sqlite":
                 Object.assign(options, {
                     type: "sqlite",
-                    "database": "database.sqlite",
+                    database: "database.sqlite"
                 });
                 break;
             case "postgres":
                 Object.assign(options, {
-                    "type": "postgres",
-                    "host": "localhost",
-                    "port": 5432,
-                    "username": "test",
-                    "password": "test",
-                    "database": "test",
+                    type: "postgres",
+                    host: "localhost",
+                    port: 5432,
+                    username: "test",
+                    password: "test",
+                    database: "test"
                 });
                 break;
             case "cockroachdb":
                 Object.assign(options, {
-                    "type": "cockroachdb",
-                    "host": "localhost",
-                    "port": 26257,
-                    "username": "root",
-                    "password": "",
-                    "database": "defaultdb",
+                    type: "cockroachdb",
+                    host: "localhost",
+                    port: 26257,
+                    username: "root",
+                    password: "",
+                    database: "defaultdb"
                 });
                 break;
             case "mssql":
                 Object.assign(options, {
-                    "type": "mssql",
-                    "host": "localhost",
-                    "username": "sa",
-                    "password": "Admin12345",
-                    "database": "tempdb",
+                    type: "mssql",
+                    host: "localhost",
+                    username: "sa",
+                    password: "Admin12345",
+                    database: "tempdb"
                 });
                 break;
             case "oracle":
                 Object.assign(options, {
-                    "type": "oracle",
-                    "host": "localhost",
-                    "username": "system",
-                    "password": "oracle",
-                    "port": 1521,
-                    "sid": "xe.oracle.docker",
+                    type: "oracle",
+                    host: "localhost",
+                    username: "system",
+                    password: "oracle",
+                    port: 1521,
+                    sid: "xe.oracle.docker"
                 });
                 break;
             case "mongodb":
                 Object.assign(options, {
-                    "type": "mongodb",
-                    "database": "test",
+                    type: "mongodb",
+                    database: "test"
                 });
                 break;
         }
         Object.assign(options, {
             synchronize: true,
             logging: false,
-            entities: [
-                "src/entity/**/*.ts"
-            ],
-            migrations: [
-                "src/migration/**/*.ts"
-            ],
-            subscribers: [
-                "src/subscriber/**/*.ts"
-            ],
+            entities: ["src/entity/**/*.ts"],
+            migrations: ["src/migration/**/*.ts"],
+            subscribers: ["src/subscriber/**/*.ts"],
             cli: {
                 entitiesDir: "src/entity",
                 migrationsDir: "src/migration",
@@ -184,19 +233,22 @@ export class InitCommand implements yargs.CommandModule {
      * Gets contents of the ormconfig file.
      */
     protected static getTsConfigTemplate(): string {
-        return JSON.stringify({
-            compilerOptions: {
-                lib: ["es5", "es6"],
-                target: "es5",
-                module: "commonjs",
-                moduleResolution: "node",
-                outDir: "./build",
-                emitDecoratorMetadata: true,
-                experimentalDecorators: true,
-                sourceMap: true
-            }
-        }
-        , undefined, 3);
+        return JSON.stringify(
+            {
+                compilerOptions: {
+                    lib: ["es5", "es6"],
+                    target: "es5",
+                    module: "commonjs",
+                    moduleResolution: "node",
+                    outDir: "./build",
+                    emitDecoratorMetadata: true,
+                    experimentalDecorators: true,
+                    sourceMap: true
+                }
+            },
+            undefined,
+            3
+        );
     }
 
     /**
@@ -215,13 +267,21 @@ temp/`;
      * Gets contents of the user entity.
      */
     protected static getUserEntityTemplate(database: string): string {
-        return `import {Entity, ${ database === "mongodb" ? "ObjectIdColumn, ObjectID" : "PrimaryGeneratedColumn" }, Column} from "typeorm";
+        return `import {Entity, ${
+            database === "mongodb"
+                ? "ObjectIdColumn, ObjectID"
+                : "PrimaryGeneratedColumn"
+        }, Column} from "typeorm";
 
 @Entity()
 export class User {
 
-    ${ database === "mongodb" ? "@ObjectIdColumn()" : "@PrimaryGeneratedColumn()" }
-    id: ${ database === "mongodb" ? "ObjectID" : "number" };
+    ${
+        database === "mongodb"
+            ? "@ObjectIdColumn()"
+            : "@PrimaryGeneratedColumn()"
+    }
+    id: ${database === "mongodb" ? "ObjectID" : "number"};
 
     @Column()
     firstName: string;
@@ -351,7 +411,6 @@ createConnection().then(async connection => {
 
 }).catch(error => console.log(error));
 `;
-
         } else {
             return `import "reflect-metadata";
 import {createConnection} from "typeorm";
@@ -382,24 +441,24 @@ createConnection().then(async connection => {
      * Gets contents of the new package.json file.
      */
     protected static getPackageJsonTemplate(projectName?: string): string {
-        return JSON.stringify({
-            name: projectName || "new-typeorm-project",
-            version: "0.0.1",
-            description: "Awesome project developed with TypeORM.",
-            devDependencies: {
+        return JSON.stringify(
+            {
+                name: projectName || "new-typeorm-project",
+                version: "0.0.1",
+                description: "Awesome project developed with TypeORM.",
+                devDependencies: {},
+                dependencies: {},
+                scripts: {}
             },
-            dependencies: {
-            },
-            scripts: {
-            }
-        }, undefined, 3);
+            undefined,
+            3
+        );
     }
 
     /**
      * Gets contents of the new docker-compose.yml file.
      */
     protected static getDockerComposeTemplate(database: string): string {
-
         switch (database) {
             case "mysql":
                 return `version: '3'
@@ -461,7 +520,9 @@ services:
 services:
 `;
             case "oracle":
-                throw new Error(`You cannot initialize a project with docker for Oracle driver yet.`); // todo: implement for oracle as well
+                throw new Error(
+                    `You cannot initialize a project with docker for Oracle driver yet.`
+                ); // todo: implement for oracle as well
 
             case "mssql":
                 return `version: '3'
@@ -518,19 +579,23 @@ Steps to run this project:
     /**
      * Appends to a given package.json template everything needed.
      */
-    protected static appendPackageJson(packageJsonContents: string, database: string, express: boolean /*, docker: boolean*/): string {
+    protected static appendPackageJson(
+        packageJsonContents: string,
+        database: string,
+        express: boolean /*, docker: boolean*/
+    ): string {
         const packageJson = JSON.parse(packageJsonContents);
 
         if (!packageJson.devDependencies) packageJson.devDependencies = {};
         Object.assign(packageJson.devDependencies, {
             "ts-node": "3.3.0",
             "@types/node": "^8.0.29",
-            "typescript": "3.3.3333"
+            typescript: "3.3.3333"
         });
 
         if (!packageJson.dependencies) packageJson.dependencies = {};
         Object.assign(packageJson.dependencies, {
-            "typeorm": require("../package.json").version,
+            typeorm: require("../package.json").version,
             "reflect-metadata": "^0.1.10"
         });
 
@@ -564,9 +629,9 @@ Steps to run this project:
 
         if (!packageJson.scripts) packageJson.scripts = {};
         Object.assign(packageJson.scripts, {
-            start: /*(docker ? "docker-compose up && " : "") + */"ts-node src/index.ts"
+            start:
+                /*(docker ? "docker-compose up && " : "") + */ "ts-node src/index.ts"
         });
         return JSON.stringify(packageJson, undefined, 3);
     }
-
 }

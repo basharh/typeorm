@@ -9,5 +9,4 @@ export class EntityColumnNotFound extends Error {
         Object.setPrototypeOf(this, EntityColumnNotFound.prototype);
         this.message = `No entity column "${propertyPath}" was found.`;
     }
-
 }

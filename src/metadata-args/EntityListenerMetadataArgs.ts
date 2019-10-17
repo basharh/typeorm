@@ -1,10 +1,9 @@
-import {EventListenerType} from "../metadata/types/EventListenerTypes";
+import { EventListenerType } from "../metadata/types/EventListenerTypes";
 
 /**
  * Arguments for EntityListenerMetadata class.
  */
 export interface EntityListenerMetadataArgs {
-
     /**
      * Class to which listener is applied.
      */
@@ -19,5 +18,4 @@ export interface EntityListenerMetadataArgs {
      * The type of the listener.
      */
     readonly type: EventListenerType;
-
 }

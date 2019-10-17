@@ -1,15 +1,14 @@
-import {ColumnMetadata} from "./ColumnMetadata";
-import {EntityMetadata} from "./EntityMetadata";
-import {NamingStrategyInterface} from "../naming-strategy/NamingStrategyInterface";
-import {DeferrableType} from "./types/DeferrableType";
-import {OnDeleteType} from "./types/OnDeleteType";
-import {OnUpdateType} from "./types/OnUpdateType";
+import { ColumnMetadata } from "./ColumnMetadata";
+import { EntityMetadata } from "./EntityMetadata";
+import { NamingStrategyInterface } from "../naming-strategy/NamingStrategyInterface";
+import { DeferrableType } from "./types/DeferrableType";
+import { OnDeleteType } from "./types/OnDeleteType";
+import { OnUpdateType } from "./types/OnUpdateType";
 
 /**
  * Contains all information about entity's foreign key.
  */
 export class ForeignKeyMetadata {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -74,14 +73,14 @@ export class ForeignKeyMetadata {
     // ---------------------------------------------------------------------
 
     constructor(options: {
-        entityMetadata: EntityMetadata,
-        referencedEntityMetadata: EntityMetadata,
-        namingStrategy?: NamingStrategyInterface,
-        columns: ColumnMetadata[],
-        referencedColumns: ColumnMetadata[],
-        onDelete?: OnDeleteType,
-        onUpdate?: OnUpdateType,
-        deferrable?: DeferrableType,
+        entityMetadata: EntityMetadata;
+        referencedEntityMetadata: EntityMetadata;
+        namingStrategy?: NamingStrategyInterface;
+        columns: ColumnMetadata[];
+        referencedColumns: ColumnMetadata[];
+        onDelete?: OnDeleteType;
+        onUpdate?: OnUpdateType;
+        deferrable?: DeferrableType;
     }) {
         this.entityMetadata = options.entityMetadata;
         this.referencedEntityMetadata = options.referencedEntityMetadata;
@@ -90,8 +89,7 @@ export class ForeignKeyMetadata {
         this.onDelete = options.onDelete || "NO ACTION";
         this.onUpdate = options.onUpdate || "NO ACTION";
         this.deferrable = options.deferrable;
-        if (options.namingStrategy)
-            this.build(options.namingStrategy);
+        if (options.namingStrategy) this.build(options.namingStrategy);
     }
 
     // ---------------------------------------------------------------------
@@ -104,9 +102,15 @@ export class ForeignKeyMetadata {
      */
     build(namingStrategy: NamingStrategyInterface) {
         this.columnNames = this.columns.map(column => column.databaseName);
-        this.referencedColumnNames = this.referencedColumns.map(column => column.databaseName);
+        this.referencedColumnNames = this.referencedColumns.map(
+            column => column.databaseName
+        );
         this.referencedTablePath = this.referencedEntityMetadata.tablePath;
-        this.name = namingStrategy.foreignKeyName(this.entityMetadata.tablePath, this.columnNames, this.referencedTablePath, this.referencedColumnNames);
+        this.name = namingStrategy.foreignKeyName(
+            this.entityMetadata.tablePath,
+            this.columnNames,
+            this.referencedTablePath,
+            this.referencedColumnNames
+        );
     }
-
 }

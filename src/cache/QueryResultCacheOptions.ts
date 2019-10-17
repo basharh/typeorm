@@ -2,7 +2,6 @@
  * Options passed to QueryResultCache class.
  */
 export interface QueryResultCacheOptions {
-
     /**
      * Cache identifier set by user.
      * Can be empty.
@@ -28,5 +27,4 @@ export interface QueryResultCacheOptions {
      * Query result that will be cached.
      */
     result?: any;
-
 }

@@ -9,5 +9,4 @@ export class NoVersionOrUpdateDateColumnError extends Error {
         Object.setPrototypeOf(this, NoVersionOrUpdateDateColumnError.prototype);
         this.message = `Entity ${entity} does not have version or update date columns.`;
     }
-
 }

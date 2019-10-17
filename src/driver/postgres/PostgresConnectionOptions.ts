@@ -1,11 +1,12 @@
-import {BaseConnectionOptions} from "../../connection/BaseConnectionOptions";
-import {PostgresConnectionCredentialsOptions} from "./PostgresConnectionCredentialsOptions";
+import { BaseConnectionOptions } from "../../connection/BaseConnectionOptions";
+import { PostgresConnectionCredentialsOptions } from "./PostgresConnectionCredentialsOptions";
 
 /**
  * Postgres-specific connection options.
  */
-export interface PostgresConnectionOptions extends BaseConnectionOptions, PostgresConnectionCredentialsOptions {
-
+export interface PostgresConnectionOptions
+    extends BaseConnectionOptions,
+        PostgresConnectionCredentialsOptions {
     /**
      * Database type.
      */
@@ -20,7 +21,6 @@ export interface PostgresConnectionOptions extends BaseConnectionOptions, Postgr
      * Replication setup.
      */
     readonly replication?: {
-
         /**
          * Master server used by orm to perform writes.
          */
@@ -30,7 +30,6 @@ export interface PostgresConnectionOptions extends BaseConnectionOptions, Postgr
          * List of read-from severs (slaves).
          */
         readonly slaves: PostgresConnectionCredentialsOptions[];
-
     };
 
     /**
@@ -40,10 +39,9 @@ export interface PostgresConnectionOptions extends BaseConnectionOptions, Postgr
      */
     readonly uuidExtension?: "pgcrypto" | "uuid-ossp";
 
-
     /*
-    * Function handling errors thrown by drivers pool.
-    * Defaults to logging error with `warn` level.
+     * Function handling errors thrown by drivers pool.
+     * Defaults to logging error with `warn` level.
      */
     readonly poolErrorHandler?: (err: any) => any;
 }

@@ -4,7 +4,6 @@ import { TlsOptions } from "tls";
  * Cockroachdb specific connection credential options.
  */
 export interface CockroachConnectionCredentialsOptions {
-
     /**
      * Connection url where perform connection to.
      */
@@ -39,5 +38,4 @@ export interface CockroachConnectionCredentialsOptions {
      * Object with ssl parameters
      */
     readonly ssl?: boolean | TlsOptions;
-
 }

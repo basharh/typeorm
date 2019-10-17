@@ -9,5 +9,4 @@ export class OptimisticLockCanNotBeUsedError extends Error {
         Object.setPrototypeOf(this, OptimisticLockCanNotBeUsedError.prototype);
         this.message = `The optimistic lock can be used only with getOne() method.`;
     }
-
 }

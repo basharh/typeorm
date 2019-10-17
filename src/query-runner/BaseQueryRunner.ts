@@ -1,17 +1,16 @@
-import {PostgresConnectionOptions} from "../driver/postgres/PostgresConnectionOptions";
-import {Query} from "../driver/Query";
-import {SqlInMemory} from "../driver/SqlInMemory";
-import {SqlServerConnectionOptions} from "../driver/sqlserver/SqlServerConnectionOptions";
-import {View} from "../schema-builder/view/View";
-import {PromiseUtils} from "../util/PromiseUtils";
-import {Connection} from "../connection/Connection";
-import {Table} from "../schema-builder/table/Table";
-import {EntityManager} from "../entity-manager/EntityManager";
-import {TableColumn} from "../schema-builder/table/TableColumn";
-import {Broadcaster} from "../subscriber/Broadcaster";
+import { PostgresConnectionOptions } from "../driver/postgres/PostgresConnectionOptions";
+import { Query } from "../driver/Query";
+import { SqlInMemory } from "../driver/SqlInMemory";
+import { SqlServerConnectionOptions } from "../driver/sqlserver/SqlServerConnectionOptions";
+import { View } from "../schema-builder/view/View";
+import { PromiseUtils } from "../util/PromiseUtils";
+import { Connection } from "../connection/Connection";
+import { Table } from "../schema-builder/table/Table";
+import { EntityManager } from "../entity-manager/EntityManager";
+import { TableColumn } from "../schema-builder/table/TableColumn";
+import { Broadcaster } from "../subscriber/Broadcaster";
 
 export abstract class BaseQueryRunner {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -70,7 +69,7 @@ export abstract class BaseQueryRunner {
     /**
      * Indicates if special query runner mode in which sql queries won't be executed is enabled.
      */
-    protected sqlMemoryMode: boolean = false;
+    protected sqlMemoryMode = false;
 
     /**
      * Sql-s stored if "sql in memory" mode is enabled.
@@ -82,7 +81,7 @@ export abstract class BaseQueryRunner {
      * Used for replication.
      * If replication is not setup its value is ignored.
      */
-    protected mode: "master"|"slave";
+    protected mode: "master" | "slave";
 
     // -------------------------------------------------------------------------
     // Public Abstract Methods
@@ -108,7 +107,7 @@ export abstract class BaseQueryRunner {
     /**
      * Loads given table's data from the database.
      */
-    async getTable(tablePath: string): Promise<Table|undefined> {
+    async getTable(tablePath: string): Promise<Table | undefined> {
         this.loadedTables = await this.loadTables([tablePath]);
         return this.loadedTables.length > 0 ? this.loadedTables[0] : undefined;
     }
@@ -124,7 +123,7 @@ export abstract class BaseQueryRunner {
     /**
      * Loads given view's data from the database.
      */
-    async getView(viewPath: string): Promise<View|undefined> {
+    async getView(viewPath: string): Promise<View | undefined> {
         this.loadedViews = await this.loadViews([viewPath]);
         return this.loadedViews.length > 0 ? this.loadedViews[0] : undefined;
     }
@@ -176,14 +175,19 @@ export abstract class BaseQueryRunner {
      * Executes up sql queries.
      */
     async executeMemoryUpSql(): Promise<void> {
-        await PromiseUtils.runInSequence(this.sqlInMemory.upQueries, upQuery => this.query(upQuery.query, upQuery.parameters));
+        await PromiseUtils.runInSequence(this.sqlInMemory.upQueries, upQuery =>
+            this.query(upQuery.query, upQuery.parameters)
+        );
     }
 
     /**
      * Executes down sql queries.
      */
     async executeMemoryDownSql(): Promise<void> {
-        await PromiseUtils.runInSequence(this.sqlInMemory.downQueries.reverse(), downQuery => this.query(downQuery.query, downQuery.parameters));
+        await PromiseUtils.runInSequence(
+            this.sqlInMemory.downQueries.reverse(),
+            downQuery => this.query(downQuery.query, downQuery.parameters)
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -226,7 +230,9 @@ export abstract class BaseQueryRunner {
      * Replaces loaded table with given changed table.
      */
     protected replaceCachedTable(table: Table, changedTable: Table): void {
-        const foundTable = this.loadedTables.find(loadedTable => loadedTable.name === table.name);
+        const foundTable = this.loadedTables.find(
+            loadedTable => loadedTable.name === table.name
+        );
         if (foundTable) {
             foundTable.name = changedTable.name;
             foundTable.columns = changedTable.columns;
@@ -240,15 +246,26 @@ export abstract class BaseQueryRunner {
     }
 
     protected getTypeormMetadataTableName(): string {
-        const options = <SqlServerConnectionOptions|PostgresConnectionOptions>this.connection.driver.options;
-        return this.connection.driver.buildTableName("typeorm_metadata", options.schema, options.database);
+        const options = <
+            SqlServerConnectionOptions | PostgresConnectionOptions
+        >this.connection.driver.options;
+        return this.connection.driver.buildTableName(
+            "typeorm_metadata",
+            options.schema,
+            options.database
+        );
     }
 
     /**
      * Checks if at least one of column properties was changed.
      * Does not checks column type, length and autoincrement, because these properties changes separately.
      */
-    protected isColumnChanged(oldColumn: TableColumn, newColumn: TableColumn, checkDefault?: boolean, checkComment?: boolean): boolean {
+    protected isColumnChanged(
+        oldColumn: TableColumn,
+        newColumn: TableColumn,
+        checkDefault?: boolean,
+        checkComment?: boolean
+    ): boolean {
         // this logs need to debug issues in column change detection. Do not delete it!
 
         // console.log("charset ---------------");
@@ -276,37 +293,50 @@ export abstract class BaseQueryRunner {
         // console.log(oldColumn.enum !== newColumn.enum);
         // console.log(oldColumn.enum, newColumn.enum);
 
-        return oldColumn.charset !== newColumn.charset
-            || oldColumn.collation !== newColumn.collation
-            || oldColumn.precision !== newColumn.precision
-            || oldColumn.scale !== newColumn.scale
-            || oldColumn.width !== newColumn.width // MySQL only
-            || oldColumn.zerofill !== newColumn.zerofill // MySQL only
-            || oldColumn.unsigned !== newColumn.unsigned // MySQL only
-            || oldColumn.asExpression !== newColumn.asExpression // MySQL only
-            || (checkDefault && oldColumn.default !== newColumn.default)
-            || oldColumn.onUpdate !== newColumn.onUpdate // MySQL only
-            || oldColumn.isNullable !== newColumn.isNullable
-            || (checkComment && oldColumn.comment !== newColumn.comment)
-            || oldColumn.enum !== newColumn.enum;
+        return (
+            oldColumn.charset !== newColumn.charset ||
+            oldColumn.collation !== newColumn.collation ||
+            oldColumn.precision !== newColumn.precision ||
+            oldColumn.scale !== newColumn.scale ||
+            oldColumn.width !== newColumn.width || // MySQL only
+            oldColumn.zerofill !== newColumn.zerofill || // MySQL only
+            oldColumn.unsigned !== newColumn.unsigned || // MySQL only
+            oldColumn.asExpression !== newColumn.asExpression || // MySQL only
+            (checkDefault && oldColumn.default !== newColumn.default) ||
+            oldColumn.onUpdate !== newColumn.onUpdate || // MySQL only
+            oldColumn.isNullable !== newColumn.isNullable ||
+            (checkComment && oldColumn.comment !== newColumn.comment) ||
+            oldColumn.enum !== newColumn.enum
+        );
     }
 
     /**
      * Checks if column length is by default.
      */
-    protected isDefaultColumnLength(table: Table, column: TableColumn, length: string): boolean {
+    protected isDefaultColumnLength(
+        table: Table,
+        column: TableColumn,
+        length: string
+    ): boolean {
         // if table have metadata, we check if length is specified in column metadata
         if (this.connection.hasMetadata(table.name)) {
             const metadata = this.connection.getMetadata(table.name);
-            const columnMetadata = metadata.findColumnWithDatabaseName(column.name);
-            if (columnMetadata && columnMetadata.length)
-                return false;
+            const columnMetadata = metadata.findColumnWithDatabaseName(
+                column.name
+            );
+            if (columnMetadata && columnMetadata.length) return false;
         }
 
-        if (this.connection.driver.dataTypeDefaults
-            && this.connection.driver.dataTypeDefaults[column.type]
-            && this.connection.driver.dataTypeDefaults[column.type].length) {
-            return this.connection.driver.dataTypeDefaults[column.type].length!.toString() === length.toString();
+        if (
+            this.connection.driver.dataTypeDefaults &&
+            this.connection.driver.dataTypeDefaults[column.type] &&
+            this.connection.driver.dataTypeDefaults[column.type].length
+        ) {
+            return (
+                this.connection.driver.dataTypeDefaults[
+                    column.type
+                ].length!.toString() === length.toString()
+            );
         }
 
         return false;
@@ -315,19 +345,29 @@ export abstract class BaseQueryRunner {
     /**
      * Checks if column display width is by default. Used only for MySQL.
      */
-    protected isDefaultColumnWidth(table: Table, column: TableColumn, width: number): boolean {
+    protected isDefaultColumnWidth(
+        table: Table,
+        column: TableColumn,
+        width: number
+    ): boolean {
         // if table have metadata, we check if length is specified in column metadata
         if (this.connection.hasMetadata(table.name)) {
             const metadata = this.connection.getMetadata(table.name);
-            const columnMetadata = metadata.findColumnWithDatabaseName(column.name);
-            if (columnMetadata && columnMetadata.width)
-                return false;
+            const columnMetadata = metadata.findColumnWithDatabaseName(
+                column.name
+            );
+            if (columnMetadata && columnMetadata.width) return false;
         }
 
-        if (this.connection.driver.dataTypeDefaults
-            && this.connection.driver.dataTypeDefaults[column.type]
-            && this.connection.driver.dataTypeDefaults[column.type].width) {
-            return this.connection.driver.dataTypeDefaults[column.type].width === width;
+        if (
+            this.connection.driver.dataTypeDefaults &&
+            this.connection.driver.dataTypeDefaults[column.type] &&
+            this.connection.driver.dataTypeDefaults[column.type].width
+        ) {
+            return (
+                this.connection.driver.dataTypeDefaults[column.type].width ===
+                width
+            );
         }
 
         return false;
@@ -336,20 +376,37 @@ export abstract class BaseQueryRunner {
     /**
      * Checks if column precision is by default.
      */
-    protected isDefaultColumnPrecision(table: Table, column: TableColumn, precision: number): boolean {
+    protected isDefaultColumnPrecision(
+        table: Table,
+        column: TableColumn,
+        precision: number
+    ): boolean {
         // if table have metadata, we check if length is specified in column metadata
         if (this.connection.hasMetadata(table.name)) {
             const metadata = this.connection.getMetadata(table.name);
-            const columnMetadata = metadata.findColumnWithDatabaseName(column.name);
-            if (columnMetadata && columnMetadata.precision !== null && columnMetadata.precision !== undefined)
+            const columnMetadata = metadata.findColumnWithDatabaseName(
+                column.name
+            );
+            if (
+                columnMetadata &&
+                columnMetadata.precision !== null &&
+                columnMetadata.precision !== undefined
+            )
                 return false;
         }
 
-        if (this.connection.driver.dataTypeDefaults
-            && this.connection.driver.dataTypeDefaults[column.type]
-            && this.connection.driver.dataTypeDefaults[column.type].precision !== null
-            && this.connection.driver.dataTypeDefaults[column.type].precision !== undefined)
-            return this.connection.driver.dataTypeDefaults[column.type].precision === precision;
+        if (
+            this.connection.driver.dataTypeDefaults &&
+            this.connection.driver.dataTypeDefaults[column.type] &&
+            this.connection.driver.dataTypeDefaults[column.type].precision !==
+                null &&
+            this.connection.driver.dataTypeDefaults[column.type].precision !==
+                undefined
+        )
+            return (
+                this.connection.driver.dataTypeDefaults[column.type]
+                    .precision === precision
+            );
 
         return false;
     }
@@ -357,20 +414,37 @@ export abstract class BaseQueryRunner {
     /**
      * Checks if column scale is by default.
      */
-    protected isDefaultColumnScale(table: Table, column: TableColumn, scale: number): boolean {
+    protected isDefaultColumnScale(
+        table: Table,
+        column: TableColumn,
+        scale: number
+    ): boolean {
         // if table have metadata, we check if length is specified in column metadata
         if (this.connection.hasMetadata(table.name)) {
             const metadata = this.connection.getMetadata(table.name);
-            const columnMetadata = metadata.findColumnWithDatabaseName(column.name);
-            if (columnMetadata && columnMetadata.scale !== null && columnMetadata.scale !== undefined)
+            const columnMetadata = metadata.findColumnWithDatabaseName(
+                column.name
+            );
+            if (
+                columnMetadata &&
+                columnMetadata.scale !== null &&
+                columnMetadata.scale !== undefined
+            )
                 return false;
         }
 
-        if (this.connection.driver.dataTypeDefaults
-            && this.connection.driver.dataTypeDefaults[column.type]
-            && this.connection.driver.dataTypeDefaults[column.type].scale !== null
-            && this.connection.driver.dataTypeDefaults[column.type].scale !== undefined)
-            return this.connection.driver.dataTypeDefaults[column.type].scale === scale;
+        if (
+            this.connection.driver.dataTypeDefaults &&
+            this.connection.driver.dataTypeDefaults[column.type] &&
+            this.connection.driver.dataTypeDefaults[column.type].scale !==
+                null &&
+            this.connection.driver.dataTypeDefaults[column.type].scale !==
+                undefined
+        )
+            return (
+                this.connection.driver.dataTypeDefaults[column.type].scale ===
+                scale
+            );
 
         return false;
     }
@@ -378,11 +452,12 @@ export abstract class BaseQueryRunner {
     /**
      * Executes sql used special for schema build.
      */
-    protected async executeQueries(upQueries: Query|Query[], downQueries: Query|Query[]): Promise<void> {
-        if (upQueries instanceof Query)
-            upQueries = [upQueries];
-        if (downQueries instanceof Query)
-            downQueries = [downQueries];
+    protected async executeQueries(
+        upQueries: Query | Query[],
+        downQueries: Query | Query[]
+    ): Promise<void> {
+        if (upQueries instanceof Query) upQueries = [upQueries];
+        if (downQueries instanceof Query) downQueries = [downQueries];
 
         this.sqlInMemory.upQueries.push(...upQueries);
         this.sqlInMemory.downQueries.push(...downQueries);
@@ -391,7 +466,8 @@ export abstract class BaseQueryRunner {
         if (this.sqlMemoryMode === true)
             return Promise.resolve() as Promise<any>;
 
-        await PromiseUtils.runInSequence(upQueries, upQuery => this.query(upQuery.query, upQuery.parameters));
+        await PromiseUtils.runInSequence(upQueries, upQuery =>
+            this.query(upQuery.query, upQuery.parameters)
+        );
     }
-
 }

@@ -1,17 +1,16 @@
-import {JoinColumnOptions} from "../decorator/options/JoinColumnOptions";
-import {RelationType} from "../metadata/types/RelationTypes";
-import {JoinTableMultipleColumnsOptions} from "../decorator/options/JoinTableMultipleColumnsOptions";
-import {DeferrableType} from "../metadata/types/DeferrableType";
-import {OnDeleteType} from "../metadata/types/OnDeleteType";
-import {OnUpdateType} from "../metadata/types/OnUpdateType";
-import {JoinTableOptions} from "../index";
+import { JoinColumnOptions } from "../decorator/options/JoinColumnOptions";
+import { RelationType } from "../metadata/types/RelationTypes";
+import { JoinTableMultipleColumnsOptions } from "../decorator/options/JoinTableMultipleColumnsOptions";
+import { DeferrableType } from "../metadata/types/DeferrableType";
+import { OnDeleteType } from "../metadata/types/OnDeleteType";
+import { OnUpdateType } from "../metadata/types/OnUpdateType";
+import { JoinTableOptions } from "../index";
 
 export interface EntitySchemaRelationOptions {
-
     /**
      * Indicates with which entity this relation is made.
      */
-    target: Function|string;
+    target: Function | string;
 
     /**
      * Type of relation. Can be one of the value of the RelationTypes class.
@@ -50,12 +49,12 @@ export interface EntitySchemaRelationOptions {
     /**
      * Join table options of this column. If set to true then it simply means that it has a join table.
      */
-    joinTable?: boolean|JoinTableOptions|JoinTableMultipleColumnsOptions;
+    joinTable?: boolean | JoinTableOptions | JoinTableMultipleColumnsOptions;
 
     /**
      * Join column options of this column. If set to true then it simply means that it has a join column.
      */
-    joinColumn?: boolean|JoinColumnOptions;
+    joinColumn?: boolean | JoinColumnOptions;
 
     /**
      * Indicates if this is a parent (can be only many-to-one relation) relation in the tree tables.
@@ -71,7 +70,7 @@ export interface EntitySchemaRelationOptions {
      * If set to true then it means that related object can be allowed to be inserted / updated / removed to the db.
      * This is option a shortcut if you would like to set cascadeInsert, cascadeUpdate and cascadeRemove to true.
      */
-    cascade?: boolean|("insert"|"update"|"remove")[];
+    cascade?: boolean | ("insert" | "update" | "remove")[];
 
     /**
      * Default database value.
@@ -97,5 +96,4 @@ export interface EntitySchemaRelationOptions {
      * Indicate if foreign key constraints can be deferred.
      */
     deferrable?: DeferrableType;
-
 }

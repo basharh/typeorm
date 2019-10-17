@@ -1,14 +1,13 @@
-import {EmbeddedMetadata} from "./EmbeddedMetadata";
-import {EntityMetadata} from "./EntityMetadata";
-import {NamingStrategyInterface} from "../naming-strategy/NamingStrategyInterface";
-import {ColumnMetadata} from "./ColumnMetadata";
-import {UniqueMetadataArgs} from "../metadata-args/UniqueMetadataArgs";
+import { EmbeddedMetadata } from "./EmbeddedMetadata";
+import { EntityMetadata } from "./EntityMetadata";
+import { NamingStrategyInterface } from "../naming-strategy/NamingStrategyInterface";
+import { ColumnMetadata } from "./ColumnMetadata";
+import { UniqueMetadataArgs } from "../metadata-args/UniqueMetadataArgs";
 
 /**
  * Unique metadata contains all information about table's unique constraints.
  */
 export class UniqueMetadata {
-
     // ---------------------------------------------------------------------
     // Public Properties
     // ---------------------------------------------------------------------
@@ -26,7 +25,7 @@ export class UniqueMetadata {
     /**
      * Target class to which metadata is applied.
      */
-    target?: Function|string;
+    target?: Function | string;
 
     /**
      * Unique columns.
@@ -41,7 +40,9 @@ export class UniqueMetadata {
     /**
      * User specified column names.
      */
-    givenColumnNames?: ((object?: any) => (any[]|{ [key: string]: number }))|string[];
+    givenColumnNames?:
+        | ((object?: any) => any[] | { [key: string]: number })
+        | string[];
 
     /**
      * Final unique constraint name.
@@ -61,15 +62,14 @@ export class UniqueMetadata {
     // ---------------------------------------------------------------------
 
     constructor(options: {
-        entityMetadata: EntityMetadata,
-        embeddedMetadata?: EmbeddedMetadata,
-        columns?: ColumnMetadata[],
-        args?: UniqueMetadataArgs
+        entityMetadata: EntityMetadata;
+        embeddedMetadata?: EmbeddedMetadata;
+        columns?: ColumnMetadata[];
+        args?: UniqueMetadataArgs;
     }) {
         this.entityMetadata = options.entityMetadata;
         this.embeddedMetadata = options.embeddedMetadata;
-        if (options.columns)
-            this.columns = options.columns;
+        if (options.columns) this.columns = options.columns;
 
         if (options.args) {
             this.target = options.args.target;
@@ -87,7 +87,6 @@ export class UniqueMetadata {
      * Must be called after all entity metadata's properties map, columns and relations are built.
      */
     build(namingStrategy: NamingStrategyInterface): this {
-
         const map: { [key: string]: number } = {};
 
         // if columns already an array of string then simply return it
@@ -96,49 +95,84 @@ export class UniqueMetadata {
             if (this.givenColumnNames instanceof Array) {
                 columnPropertyPaths = this.givenColumnNames.map(columnName => {
                     if (this.embeddedMetadata)
-                        return this.embeddedMetadata.propertyPath + "." + columnName;
+                        return (
+                            this.embeddedMetadata.propertyPath +
+                            "." +
+                            columnName
+                        );
 
                     return columnName;
                 });
-                columnPropertyPaths.forEach(propertyPath => map[propertyPath] = 1);
+                columnPropertyPaths.forEach(
+                    propertyPath => (map[propertyPath] = 1)
+                );
             } else {
                 // if columns is a function that returns array of field names then execute it and get columns names from it
-                const columnsFnResult = this.givenColumnNames(this.entityMetadata.propertiesMap);
+                const columnsFnResult = this.givenColumnNames(
+                    this.entityMetadata.propertiesMap
+                );
                 if (columnsFnResult instanceof Array) {
-                    columnPropertyPaths = columnsFnResult.map((i: any) => String(i));
-                    columnPropertyPaths.forEach(name => map[name] = 1);
+                    columnPropertyPaths = columnsFnResult.map((i: any) =>
+                        String(i)
+                    );
+                    columnPropertyPaths.forEach(name => (map[name] = 1));
                 } else {
-                    columnPropertyPaths = Object.keys(columnsFnResult).map((i: any) => String(i));
-                    Object.keys(columnsFnResult).forEach(columnName => map[columnName] = columnsFnResult[columnName]);
+                    columnPropertyPaths = Object.keys(columnsFnResult).map(
+                        (i: any) => String(i)
+                    );
+                    Object.keys(columnsFnResult).forEach(
+                        columnName =>
+                            (map[columnName] = columnsFnResult[columnName])
+                    );
                 }
             }
 
-            this.columns = columnPropertyPaths.map(propertyName => {
-                const columnWithSameName = this.entityMetadata.columns.find(column => column.propertyPath === propertyName);
-                if (columnWithSameName) {
-                    return [columnWithSameName];
-                }
-                const relationWithSameName = this.entityMetadata.relations.find(relation => relation.isWithJoinColumn && relation.propertyName === propertyName);
-                if (relationWithSameName) {
-                    return relationWithSameName.joinColumns;
-                }
-                const indexName = this.givenName ? "\"" + this.givenName + "\" " : "";
-                const entityName = this.entityMetadata.targetName;
-                throw new Error(`Unique constraint ${indexName}contains column that is missing in the entity (${entityName}): ` + propertyName);
-            })
-            .reduce((a, b) => a.concat(b));
+            this.columns = columnPropertyPaths
+                .map(propertyName => {
+                    const columnWithSameName = this.entityMetadata.columns.find(
+                        column => column.propertyPath === propertyName
+                    );
+                    if (columnWithSameName) {
+                        return [columnWithSameName];
+                    }
+                    const relationWithSameName = this.entityMetadata.relations.find(
+                        relation =>
+                            relation.isWithJoinColumn &&
+                            relation.propertyName === propertyName
+                    );
+                    if (relationWithSameName) {
+                        return relationWithSameName.joinColumns;
+                    }
+                    const indexName = this.givenName
+                        ? '"' + this.givenName + '" '
+                        : "";
+                    const entityName = this.entityMetadata.targetName;
+                    throw new Error(
+                        `Unique constraint ${indexName}contains column that is missing in the entity (${entityName}): ` +
+                            propertyName
+                    );
+                })
+                .reduce((a, b) => a.concat(b));
         }
 
-        this.columnNamesWithOrderingMap = Object.keys(map).reduce((updatedMap, key) => {
-            const column = this.entityMetadata.columns.find(column => column.propertyPath === key);
-            if (column)
-                updatedMap[column.databasePath] = map[key];
+        this.columnNamesWithOrderingMap = Object.keys(map).reduce(
+            (updatedMap, key) => {
+                const column = this.entityMetadata.columns.find(
+                    column => column.propertyPath === key
+                );
+                if (column) updatedMap[column.databasePath] = map[key];
 
-            return updatedMap;
-        }, {} as { [key: string]: number });
+                return updatedMap;
+            },
+            {} as { [key: string]: number }
+        );
 
-        this.name = this.givenName ? this.givenName : namingStrategy.uniqueConstraintName(this.entityMetadata.tablePath, this.columns.map(column => column.databaseName));
+        this.name = this.givenName
+            ? this.givenName
+            : namingStrategy.uniqueConstraintName(
+                  this.entityMetadata.tablePath,
+                  this.columns.map(column => column.databaseName)
+              );
         return this;
     }
-
 }

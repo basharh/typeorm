@@ -1,18 +1,17 @@
-import {Connection, SelectQueryBuilder} from "..";
-import {EntitySchemaIndexOptions} from "./EntitySchemaIndexOptions";
-import {EntitySchemaColumnOptions} from "./EntitySchemaColumnOptions";
-import {EntitySchemaRelationOptions} from "./EntitySchemaRelationOptions";
-import {OrderByCondition} from "../find-options/OrderByCondition";
-import {TableType} from "../metadata/types/TableTypes";
-import {EntitySchemaUniqueOptions} from "./EntitySchemaUniqueOptions";
-import {EntitySchemaCheckOptions} from "./EntitySchemaCheckOptions";
-import {EntitySchemaExclusionOptions} from "./EntitySchemaExclusionOptions";
+import { Connection, SelectQueryBuilder } from "..";
+import { EntitySchemaIndexOptions } from "./EntitySchemaIndexOptions";
+import { EntitySchemaColumnOptions } from "./EntitySchemaColumnOptions";
+import { EntitySchemaRelationOptions } from "./EntitySchemaRelationOptions";
+import { OrderByCondition } from "../find-options/OrderByCondition";
+import { TableType } from "../metadata/types/TableTypes";
+import { EntitySchemaUniqueOptions } from "./EntitySchemaUniqueOptions";
+import { EntitySchemaCheckOptions } from "./EntitySchemaCheckOptions";
+import { EntitySchemaExclusionOptions } from "./EntitySchemaExclusionOptions";
 
 /**
  * Interface for entity metadata mappings stored inside "schemas" instead of models decorated by decorators.
  */
 export class EntitySchemaOptions<T> {
-
     /**
      * Name of the schema it extends.
      */
@@ -68,23 +67,23 @@ export class EntitySchemaOptions<T> {
     };
 
     /**
-    * Entity indices options.
-    */
+     * Entity indices options.
+     */
     indices?: EntitySchemaIndexOptions[];
 
     /**
-    * Entity uniques options.
-    */
+     * Entity uniques options.
+     */
     uniques?: EntitySchemaUniqueOptions[];
 
     /**
-    * Entity check options.
-    */
+     * Entity check options.
+     */
     checks?: EntitySchemaCheckOptions[];
 
     /**
-    * Entity exclusion options.
-    */
+     * Entity exclusion options.
+     */
     exclusions?: EntitySchemaExclusionOptions[];
 
     /**
@@ -97,6 +96,5 @@ export class EntitySchemaOptions<T> {
     /**
      * View expression.
      */
-    expression?: string|((connection: Connection) => SelectQueryBuilder<any>);
-
+    expression?: string | ((connection: Connection) => SelectQueryBuilder<any>);
 }

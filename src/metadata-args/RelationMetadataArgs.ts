@@ -1,17 +1,16 @@
-import {RelationType} from "../metadata/types/RelationTypes";
-import {RelationOptions} from "../decorator/options/RelationOptions";
-import {PropertyTypeFactory} from "../metadata/types/PropertyTypeInFunction";
-import {RelationTypeInFunction} from "../metadata/types/RelationTypeInFunction";
+import { RelationType } from "../metadata/types/RelationTypes";
+import { RelationOptions } from "../decorator/options/RelationOptions";
+import { PropertyTypeFactory } from "../metadata/types/PropertyTypeInFunction";
+import { RelationTypeInFunction } from "../metadata/types/RelationTypeInFunction";
 
 /**
  * Arguments for RelationMetadata class.
  */
 export interface RelationMetadataArgs {
-
     /**
      * Class to which this relation is applied.
      */
-    readonly target: Function|string;
+    readonly target: Function | string;
 
     /**
      * In the case if this relation is without a target, targetId must be specified.
@@ -66,5 +65,4 @@ export interface RelationMetadataArgs {
      * Indicates if this is a children (can be only one-to-many relation) relation in the tree tables.
      */
     readonly isTreeChildren?: boolean;
-
 }

@@ -1,5 +1,4 @@
 export interface EntitySchemaExclusionOptions {
-
     /**
      * Exclusion constraint name.
      */
@@ -9,5 +8,4 @@ export interface EntitySchemaExclusionOptions {
      * Exclusion expression.
      */
     expression: string;
-
 }

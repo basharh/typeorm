@@ -1,16 +1,15 @@
-import {EntityMetadata} from "../metadata/EntityMetadata";
-import {Connection} from "../connection/Connection";
-import {RelationMetadata} from "../metadata/RelationMetadata";
-import {QueryBuilderUtils} from "./QueryBuilderUtils";
-import {QueryExpressionMap} from "./QueryExpressionMap";
-import {Alias} from "./Alias";
-import {ObjectUtils} from "../util/ObjectUtils";
+import { EntityMetadata } from "../metadata/EntityMetadata";
+import { Connection } from "../connection/Connection";
+import { RelationMetadata } from "../metadata/RelationMetadata";
+import { QueryBuilderUtils } from "./QueryBuilderUtils";
+import { QueryExpressionMap } from "./QueryExpressionMap";
+import { Alias } from "./Alias";
+import { ObjectUtils } from "../util/ObjectUtils";
 
 /**
  * Stores all join attributes which will be used to build a JOIN query.
  */
 export class JoinAttribute {
-
     // -------------------------------------------------------------------------
     // Public Properties
     // -------------------------------------------------------------------------
@@ -18,7 +17,7 @@ export class JoinAttribute {
     /**
      * Join direction.
      */
-    direction: "LEFT"|"INNER";
+    direction: "LEFT" | "INNER";
 
     /**
      * Alias of the joined (destination) table.
@@ -28,7 +27,7 @@ export class JoinAttribute {
     /**
      * Joined table, entity target, or relation in "post.category" format.
      */
-    entityOrProperty: Function|string;
+    entityOrProperty: Function | string;
 
     /**
      * Extra condition applied to "ON" section of join.
@@ -49,9 +48,11 @@ export class JoinAttribute {
     // Constructor
     // -------------------------------------------------------------------------
 
-    constructor(private connection: Connection,
-                private queryExpressionMap: QueryExpressionMap,
-                joinAttribute?: JoinAttribute) {
+    constructor(
+        private connection: Connection,
+        private queryExpressionMap: QueryExpressionMap,
+        joinAttribute?: JoinAttribute
+    ) {
         ObjectUtils.assign(this, joinAttribute || {});
     }
 
@@ -60,8 +61,7 @@ export class JoinAttribute {
     // -------------------------------------------------------------------------
 
     get isMany(): boolean {
-        if (this.isMappingMany !== undefined)
-            return this.isMappingMany;
+        if (this.isMappingMany !== undefined) return this.isMappingMany;
 
         if (this.relation)
             return this.relation.isManyToMany || this.relation.isOneToMany;
@@ -69,20 +69,25 @@ export class JoinAttribute {
         return false;
     }
 
-
     isSelectedCache: boolean;
-    isSelectedEvaluated: boolean = false;
+    isSelectedEvaluated = false;
     /**
      * Indicates if this join is selected.
      */
     get isSelected(): boolean {
         if (!this.isSelectedEvaluated) {
-            let getValue = () => {
+            const getValue = () => {
                 for (const select of this.queryExpressionMap.selects) {
-                    if (select.selection === this.alias.name)
-                        return true;
+                    if (select.selection === this.alias.name) return true;
 
-                    if (this.metadata && !!this.metadata.columns.find(column => select.selection === this.alias.name + "." + column.propertyPath))
+                    if (
+                        this.metadata &&
+                        !!this.metadata.columns.find(
+                            column =>
+                                select.selection ===
+                                this.alias.name + "." + column.propertyPath
+                        )
+                    )
                         return true;
                 }
 
@@ -92,14 +97,15 @@ export class JoinAttribute {
             this.isSelectedEvaluated = true;
         }
         return this.isSelectedCache;
-
     }
 
     /**
      * Name of the table which we should join.
      */
     get tablePath(): string {
-        return this.metadata ? this.metadata.tablePath : this.entityOrProperty as string;
+        return this.metadata
+            ? this.metadata.tablePath
+            : (this.entityOrProperty as string);
     }
 
     /**
@@ -108,11 +114,14 @@ export class JoinAttribute {
      * This value is extracted from entityOrProperty value.
      * This is available when join was made using "post.category" syntax.
      */
-    get parentAlias(): string|undefined {
+    get parentAlias(): string | undefined {
         if (!QueryBuilderUtils.isAliasProperty(this.entityOrProperty))
             return undefined;
 
-        return this.entityOrProperty.substr(0, this.entityOrProperty.indexOf("."));
+        return this.entityOrProperty.substr(
+            0,
+            this.entityOrProperty.indexOf(".")
+        );
     }
 
     /**
@@ -122,15 +131,17 @@ export class JoinAttribute {
      * This value is extracted from entityOrProperty value.
      * This is available when join was made using "post.category" syntax.
      */
-    get relationPropertyPath(): string|undefined {
+    get relationPropertyPath(): string | undefined {
         if (!QueryBuilderUtils.isAliasProperty(this.entityOrProperty))
             return undefined;
 
-        return this.entityOrProperty.substr(this.entityOrProperty.indexOf(".") + 1);
+        return this.entityOrProperty.substr(
+            this.entityOrProperty.indexOf(".") + 1
+        );
     }
 
-    relationCache: RelationMetadata|undefined;
-    relationEvaluated: boolean = false;
+    relationCache: RelationMetadata | undefined;
+    relationEvaluated = false;
     /**
      * Relation of the parent.
      * This is used to understand what is joined.
@@ -139,25 +150,33 @@ export class JoinAttribute {
      */
     get relation(): RelationMetadata | undefined {
         if (!this.relationEvaluated) {
-            let getValue = () => {
+            const getValue = () => {
                 if (!QueryBuilderUtils.isAliasProperty(this.entityOrProperty))
                     return undefined;
 
-                const relationOwnerSelection = this.queryExpressionMap.findAliasByName(this.parentAlias!);
-                let relation = relationOwnerSelection.metadata.findRelationWithPropertyPath(this.relationPropertyPath!);
+                const relationOwnerSelection = this.queryExpressionMap.findAliasByName(
+                    this.parentAlias!
+                );
+                let relation = relationOwnerSelection.metadata.findRelationWithPropertyPath(
+                    this.relationPropertyPath!
+                );
 
                 if (relation) {
                     return relation;
                 }
 
                 if (relationOwnerSelection.metadata.parentEntityMetadata) {
-                    relation = relationOwnerSelection.metadata.parentEntityMetadata.findRelationWithPropertyPath(this.relationPropertyPath!);
+                    relation = relationOwnerSelection.metadata.parentEntityMetadata.findRelationWithPropertyPath(
+                        this.relationPropertyPath!
+                    );
                     if (relation) {
                         return relation;
                     }
                 }
 
-                throw new Error(`Relation with property path ${this.relationPropertyPath} in entity was not found.`);
+                throw new Error(
+                    `Relation with property path ${this.relationPropertyPath} in entity was not found.`
+                );
             };
             this.relationCache = getValue.bind(this)();
             this.relationEvaluated = true;
@@ -169,11 +188,9 @@ export class JoinAttribute {
      * Metadata of the joined entity.
      * If table without entity was joined, then it will return undefined.
      */
-    get metadata(): EntityMetadata|undefined {
-
+    get metadata(): EntityMetadata | undefined {
         // entityOrProperty is relation, e.g. "post.category"
-        if (this.relation)
-            return this.relation.inverseEntityMetadata;
+        if (this.relation) return this.relation.inverseEntityMetadata;
 
         // entityOrProperty is Entity class
         if (this.connection.hasMetadata(this.entityOrProperty))
@@ -199,23 +216,24 @@ export class JoinAttribute {
      */
     get junctionAlias(): string {
         if (!this.relation)
-            throw new Error(`Cannot get junction table for join without relation.`);
+            throw new Error(
+                `Cannot get junction table for join without relation.`
+            );
 
-        return this.relation.isOwning ? this.parentAlias + "_" + this.alias.name : this.alias.name + "_" + this.parentAlias;
+        return this.relation.isOwning
+            ? this.parentAlias + "_" + this.alias.name
+            : this.alias.name + "_" + this.parentAlias;
     }
 
-    get mapToPropertyParentAlias(): string|undefined {
-        if (!this.mapToProperty)
-            return undefined;
+    get mapToPropertyParentAlias(): string | undefined {
+        if (!this.mapToProperty) return undefined;
 
         return this.mapToProperty!.split(".")[0];
     }
 
-    get mapToPropertyPropertyName(): string|undefined {
-        if (!this.mapToProperty)
-            return undefined;
+    get mapToPropertyPropertyName(): string | undefined {
+        if (!this.mapToProperty) return undefined;
 
         return this.mapToProperty!.split(".")[1];
     }
-
 }

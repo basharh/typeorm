@@ -1,11 +1,12 @@
-import {BaseConnectionOptions} from "../../connection/BaseConnectionOptions";
-import {SqlServerConnectionCredentialsOptions} from "./SqlServerConnectionCredentialsOptions";
+import { BaseConnectionOptions } from "../../connection/BaseConnectionOptions";
+import { SqlServerConnectionCredentialsOptions } from "./SqlServerConnectionCredentialsOptions";
 
 /**
  * Microsoft Sql Server specific connection options.
  */
-export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlServerConnectionCredentialsOptions {
-
+export interface SqlServerConnectionOptions
+    extends BaseConnectionOptions,
+        SqlServerConnectionCredentialsOptions {
     /**
      * Database type.
      */
@@ -37,7 +38,6 @@ export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlSe
      * An optional object/dictionary with the any of the properties
      */
     readonly pool?: {
-
         /**
          * Maximum number of resources to create at any given time. (default=1)
          */
@@ -108,8 +108,8 @@ export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlSe
         readonly idleTimeoutMillis?: number;
 
         /*
-        * Function handling errors thrown by drivers pool.
-        * Defaults to logging error with `warn` level.
+         * Function handling errors thrown by drivers pool.
+         * Defaults to logging error with `warn` level.
          */
         readonly errorHandler?: (err: any) => any;
     };
@@ -118,7 +118,6 @@ export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlSe
      * Extra options
      */
     readonly options?: {
-
         /**
          * By default, if the database requestion by options.database cannot be accessed, the connection will fail with
          * an error. However, if options.fallbackToDefaultDb is set to true, then the user's default database will
@@ -184,7 +183,6 @@ export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlSe
          * Debug options
          */
         readonly debug?: {
-
             /**
              * A boolean, controlling whether debug events will be emitted with text describing packet details
              * (default: false).
@@ -214,13 +212,23 @@ export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlSe
          * The default isolation level that transactions will be run with. The isolation levels are available
          * from require('tedious').ISOLATION_LEVEL. (default: READ_COMMITTED).
          */
-        readonly isolation?: "READ_UNCOMMITTED"|"READ_COMMITTED"|"REPEATABLE_READ"|"SERIALIZABLE"|"SNAPSHOT";
+        readonly isolation?:
+            | "READ_UNCOMMITTED"
+            | "READ_COMMITTED"
+            | "REPEATABLE_READ"
+            | "SERIALIZABLE"
+            | "SNAPSHOT";
 
         /**
          * The default isolation level for new connections. All out-of-transaction queries are executed with this
          * setting. The isolation levels are available from require('tedious').ISOLATION_LEVEL .
          */
-        readonly connectionIsolationLevel?: "READ_UNCOMMITTED"|"READ_COMMITTED"|"REPEATABLE_READ"|"SERIALIZABLE"|"SNAPSHOT";
+        readonly connectionIsolationLevel?:
+            | "READ_UNCOMMITTED"
+            | "READ_COMMITTED"
+            | "REPEATABLE_READ"
+            | "SERIALIZABLE"
+            | "SNAPSHOT";
 
         /**
          * A boolean, determining whether the connection will request read only access from a SQL Server
@@ -264,7 +272,6 @@ export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlSe
      * Replication setup.
      */
     readonly replication?: {
-
         /**
          * Master server used by orm to perform writes.
          */
@@ -274,8 +281,5 @@ export interface SqlServerConnectionOptions extends BaseConnectionOptions, SqlSe
          * List of read-from severs (slaves).
          */
         readonly slaves: SqlServerConnectionCredentialsOptions[];
-
     };
-
-
 }

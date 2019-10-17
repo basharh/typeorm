@@ -1,11 +1,12 @@
-import {BaseConnectionOptions} from "../../connection/BaseConnectionOptions";
-import {OracleConnectionCredentialsOptions} from "./OracleConnectionCredentialsOptions";
+import { BaseConnectionOptions } from "../../connection/BaseConnectionOptions";
+import { OracleConnectionCredentialsOptions } from "./OracleConnectionCredentialsOptions";
 
 /**
  * Oracle-specific connection options.
  */
-export interface OracleConnectionOptions extends BaseConnectionOptions, OracleConnectionCredentialsOptions {
-
+export interface OracleConnectionOptions
+    extends BaseConnectionOptions,
+        OracleConnectionCredentialsOptions {
     /**
      * Database type.
      */
@@ -20,7 +21,6 @@ export interface OracleConnectionOptions extends BaseConnectionOptions, OracleCo
      * Replication setup.
      */
     readonly replication?: {
-
         /**
          * Master server used by orm to perform writes.
          */
@@ -30,7 +30,5 @@ export interface OracleConnectionOptions extends BaseConnectionOptions, OracleCo
          * List of read-from severs (slaves).
          */
         readonly slaves: OracleConnectionCredentialsOptions[];
-
     };
-
 }

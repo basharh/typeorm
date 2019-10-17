@@ -9,14 +9,27 @@ export class VersionCommand implements yargs.CommandModule {
     describe = "Prints TypeORM version this project uses.";
 
     async handler() {
-
-        const localNpmList = await VersionCommand.executeCommand("npm list --depth=0");
+        const localNpmList = await VersionCommand.executeCommand(
+            "npm list --depth=0"
+        );
         const localMatches = localNpmList.match(/ typeorm@(.*)\n/);
-        const localNpmVersion = (localMatches && localMatches[1] ? localMatches[1] : "").replace(/"invalid"/gi, "").trim();
+        const localNpmVersion = (localMatches && localMatches[1]
+            ? localMatches[1]
+            : ""
+        )
+            .replace(/"invalid"/gi, "")
+            .trim();
 
-        const globalNpmList = await VersionCommand.executeCommand("npm list -g --depth=0");
+        const globalNpmList = await VersionCommand.executeCommand(
+            "npm list -g --depth=0"
+        );
         const globalMatches = globalNpmList.match(/ typeorm@(.*)\n/);
-        const globalNpmVersion = (globalMatches && globalMatches[1] ? globalMatches[1] : "").replace(/"invalid"/gi, "").trim();
+        const globalNpmVersion = (globalMatches && globalMatches[1]
+            ? globalMatches[1]
+            : ""
+        )
+            .replace(/"invalid"/gi, "")
+            .trim();
 
         if (localNpmVersion) {
             console.log("Local installed version:", localNpmVersion);
@@ -29,9 +42,15 @@ export class VersionCommand implements yargs.CommandModule {
             console.log("No global installed was found.");
         }
 
-        if (localNpmVersion && globalNpmVersion && localNpmVersion !== globalNpmVersion) {
-            console.log("To avoid issues with CLI please make sure your global and local TypeORM versions match, " +
-                "or you are using locally installed TypeORM instead of global one.");
+        if (
+            localNpmVersion &&
+            globalNpmVersion &&
+            localNpmVersion !== globalNpmVersion
+        ) {
+            console.log(
+                "To avoid issues with CLI please make sure your global and local TypeORM versions match, " +
+                    "or you are using locally installed TypeORM instead of global one."
+            );
         }
     }
 
@@ -45,5 +64,4 @@ export class VersionCommand implements yargs.CommandModule {
             });
         });
     }
-
 }

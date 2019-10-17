@@ -1,20 +1,29 @@
-import {EntityMetadata} from "../../metadata/EntityMetadata";
-import {ObjectLiteral} from "../../common/ObjectLiteral";
+import { EntityMetadata } from "../../metadata/EntityMetadata";
+import { ObjectLiteral } from "../../common/ObjectLiteral";
 
 /**
  * Transforms plain old javascript object
  * Entity is constructed based on its entity metadata.
  */
 export class PlainObjectToNewEntityTransformer {
-
     // -------------------------------------------------------------------------
     // Public Methods
     // -------------------------------------------------------------------------
 
-    transform<T>(newEntity: T, object: ObjectLiteral, metadata: EntityMetadata, getLazyRelationsPromiseValue: boolean = false): T {
+    transform<T>(
+        newEntity: T,
+        object: ObjectLiteral,
+        metadata: EntityMetadata,
+        getLazyRelationsPromiseValue = false
+    ): T {
         // console.log("groupAndTransform entity:", newEntity);
         // console.log("groupAndTransform object:", object);
-        this.groupAndTransform(newEntity, object, metadata, getLazyRelationsPromiseValue);
+        this.groupAndTransform(
+            newEntity,
+            object,
+            metadata,
+            getLazyRelationsPromiseValue
+        );
         // console.log("result:", newEntity);
         return newEntity;
     }
@@ -27,8 +36,12 @@ export class PlainObjectToNewEntityTransformer {
      * Since db returns a duplicated rows of the data where accuracies of the same object can be duplicated
      * we need to group our result and we must have some unique id (primary key in our case)
      */
-    private groupAndTransform(entity: ObjectLiteral, object: ObjectLiteral, metadata: EntityMetadata, getLazyRelationsPromiseValue: boolean = false): void {
-
+    private groupAndTransform(
+        entity: ObjectLiteral,
+        object: ObjectLiteral,
+        metadata: EntityMetadata,
+        getLazyRelationsPromiseValue = false
+    ): void {
         // console.log("groupAndTransform entity:", entity);
         // console.log("groupAndTransform object:", object);
 
@@ -42,15 +55,15 @@ export class PlainObjectToNewEntityTransformer {
         // // copy relation properties from the given object
         if (metadata.relations.length) {
             metadata.relations.forEach(relation => {
-
                 let entityRelatedValue = relation.getEntityValue(entity);
-                const objectRelatedValue = relation.getEntityValue(object, getLazyRelationsPromiseValue);
-                if (objectRelatedValue === undefined)
-                    return;
+                const objectRelatedValue = relation.getEntityValue(
+                    object,
+                    getLazyRelationsPromiseValue
+                );
+                if (objectRelatedValue === undefined) return;
 
                 if (relation.isOneToMany || relation.isManyToMany) {
-                    if (!(objectRelatedValue instanceof Array))
-                        return;
+                    if (!(objectRelatedValue instanceof Array)) return;
 
                     if (!entityRelatedValue) {
                         entityRelatedValue = [];
@@ -58,11 +71,15 @@ export class PlainObjectToNewEntityTransformer {
                     }
 
                     objectRelatedValue.forEach(objectRelatedValueItem => {
-
                         // check if we have this item from the merging object in the original entity we merge into
-                        let objectRelatedValueEntity = (entityRelatedValue as any[]).find(entityRelatedValueItem => {
-                            return relation.inverseEntityMetadata.compareEntities(objectRelatedValueItem, entityRelatedValueItem);
-                        });
+                        let objectRelatedValueEntity = (entityRelatedValue as any[]).find(
+                            entityRelatedValueItem => {
+                                return relation.inverseEntityMetadata.compareEntities(
+                                    objectRelatedValueItem,
+                                    entityRelatedValueItem
+                                );
+                            }
+                        );
 
                         // if such item already exist then merge new data into it, if its not we create a new entity and merge it into the array
                         if (!objectRelatedValueEntity) {
@@ -70,11 +87,14 @@ export class PlainObjectToNewEntityTransformer {
                             entityRelatedValue.push(objectRelatedValueEntity);
                         }
 
-                        this.groupAndTransform(objectRelatedValueEntity, objectRelatedValueItem, relation.inverseEntityMetadata, getLazyRelationsPromiseValue);
+                        this.groupAndTransform(
+                            objectRelatedValueEntity,
+                            objectRelatedValueItem,
+                            relation.inverseEntityMetadata,
+                            getLazyRelationsPromiseValue
+                        );
                     });
-
                 } else {
-
                     // if related object isn't an object (direct relation id for example)
                     // we just set it to the entity relation, we don't need anything more from it
                     // however we do it only if original entity does not have this relation set to object
@@ -90,10 +110,14 @@ export class PlainObjectToNewEntityTransformer {
                         relation.setEntityValue(entity, entityRelatedValue);
                     }
 
-                    this.groupAndTransform(entityRelatedValue, objectRelatedValue, relation.inverseEntityMetadata, getLazyRelationsPromiseValue);
+                    this.groupAndTransform(
+                        entityRelatedValue,
+                        objectRelatedValue,
+                        relation.inverseEntityMetadata,
+                        getLazyRelationsPromiseValue
+                    );
                 }
             });
         }
     }
-
 }

@@ -8,5 +8,4 @@ export class QueryRunnerAlreadyReleasedError extends Error {
         Object.setPrototypeOf(this, QueryRunnerAlreadyReleasedError.prototype);
         this.message = `Query runner already released. Cannot run queries anymore.`;
     }
-
 }

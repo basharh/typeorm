@@ -1,5 +1,5 @@
-import {getMetadataArgsStorage} from "../";
-import {GeneratedMetadataArgs} from "../metadata-args/GeneratedMetadataArgs";
+import { getMetadataArgsStorage } from "../";
+import { GeneratedMetadataArgs } from "../metadata-args/GeneratedMetadataArgs";
 
 /**
  * Marks a column to generate a value on entity insertion.
@@ -10,9 +10,10 @@ import {GeneratedMetadataArgs} from "../metadata-args/GeneratedMetadataArgs";
  *
  * Note, some databases do not support non-primary generation columns.
  */
-export function Generated(strategy: "increment"|"uuid"|"rowid" = "increment"): Function {
-    return function (object: Object, propertyName: string) {
-
+export function Generated(
+    strategy: "increment" | "uuid" | "rowid" = "increment"
+): Function {
+    return function(object: Record<string, any>, propertyName: string) {
         getMetadataArgsStorage().generations.push({
             target: object.constructor,
             propertyName: propertyName,

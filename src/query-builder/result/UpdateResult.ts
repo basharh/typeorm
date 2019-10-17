@@ -1,10 +1,9 @@
-import {ObjectLiteral} from "../../common/ObjectLiteral";
+import { ObjectLiteral } from "../../common/ObjectLiteral";
 
 /**
  * Result object returned by UpdateQueryBuilder execution.
  */
 export class UpdateResult {
-
     /**
      * Raw SQL result returned by executed query.
      */
@@ -27,5 +26,4 @@ export class UpdateResult {
      * Has entity-like structure (not just column database name and values).
      */
     generatedMaps: ObjectLiteral[] = [];
-
 }

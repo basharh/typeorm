@@ -1,21 +1,21 @@
-import {AbstractSqliteDriver} from "../sqlite-abstract/AbstractSqliteDriver";
-import {SqljsConnectionOptions} from "./SqljsConnectionOptions";
-import {SqljsQueryRunner} from "./SqljsQueryRunner";
-import {QueryRunner} from "../../query-runner/QueryRunner";
-import {Connection} from "../../connection/Connection";
-import {DriverPackageNotInstalledError} from "../../error/DriverPackageNotInstalledError";
-import {DriverOptionNotSetError} from "../../error/DriverOptionNotSetError";
-import {PlatformTools} from "../../platform/PlatformTools";
-import {EntityMetadata} from "../../metadata/EntityMetadata";
-import {OrmUtils} from "../../util/OrmUtils";
-import {ObjectLiteral} from "../../common/ObjectLiteral";
+import { AbstractSqliteDriver } from "../sqlite-abstract/AbstractSqliteDriver";
+import { SqljsConnectionOptions } from "./SqljsConnectionOptions";
+import { SqljsQueryRunner } from "./SqljsQueryRunner";
+import { QueryRunner } from "../../query-runner/QueryRunner";
+import { Connection } from "../../connection/Connection";
+import { DriverPackageNotInstalledError } from "../../error/DriverPackageNotInstalledError";
+import { DriverOptionNotSetError } from "../../error/DriverOptionNotSetError";
+import { PlatformTools } from "../../platform/PlatformTools";
+import { EntityMetadata } from "../../metadata/EntityMetadata";
+import { OrmUtils } from "../../util/OrmUtils";
+import { ObjectLiteral } from "../../common/ObjectLiteral";
 
 // This is needed to satisfy the typescript compiler.
 interface Window {
     SQL: any;
     localforage: any;
 }
-declare var window: Window;
+declare let window: Window;
 
 export class SqljsDriver extends AbstractSqliteDriver {
     // The driver specific options.
@@ -30,14 +30,17 @@ export class SqljsDriver extends AbstractSqliteDriver {
 
         // If autoSave is enabled by user, location or autoSaveCallback have to be set
         // because either autoSave saves to location or calls autoSaveCallback.
-        if (this.options.autoSave && !this.options.location && !this.options.autoSaveCallback) {
+        if (
+            this.options.autoSave &&
+            !this.options.location &&
+            !this.options.autoSaveCallback
+        ) {
             throw new DriverOptionNotSetError(`location or autoSaveCallback`);
         }
 
         // load sql.js package
         this.loadDependencies();
     }
-
 
     // -------------------------------------------------------------------------
     // Public Methods
@@ -59,8 +62,7 @@ export class SqljsDriver extends AbstractSqliteDriver {
                 this.queryRunner = undefined;
                 this.databaseConnection.close();
                 ok();
-            }
-            catch (e)  {
+            } catch (e) {
                 fail(e);
             }
         });
@@ -70,67 +72,79 @@ export class SqljsDriver extends AbstractSqliteDriver {
      * Creates a query runner used to execute database queries.
      */
     createQueryRunner(mode: "master" | "slave" = "master"): QueryRunner {
-        if (!this.queryRunner)
-            this.queryRunner = new SqljsQueryRunner(this);
+        if (!this.queryRunner) this.queryRunner = new SqljsQueryRunner(this);
 
         return this.queryRunner;
     }
-    
+
     /**
      * Loads a database from a given file (Node.js), local storage key (browser) or array.
      * This will delete the current database!
      */
-    async load(fileNameOrLocalStorageOrData: string | Uint8Array, checkIfFileOrLocalStorageExists: boolean = true): Promise<any> {
+    async load(
+        fileNameOrLocalStorageOrData: string | Uint8Array,
+        checkIfFileOrLocalStorageExists = true
+    ): Promise<any> {
         if (typeof fileNameOrLocalStorageOrData === "string") {
             // content has to be loaded
             if (PlatformTools.type === "node") {
                 // Node.js
                 // fileNameOrLocalStorageOrData should be a path to the file
                 if (PlatformTools.fileExist(fileNameOrLocalStorageOrData)) {
-                    const database = PlatformTools.readFileSync(fileNameOrLocalStorageOrData);
+                    const database = PlatformTools.readFileSync(
+                        fileNameOrLocalStorageOrData
+                    );
                     return this.createDatabaseConnectionWithImport(database);
-                }
-                else if (checkIfFileOrLocalStorageExists) {
-                    throw new Error(`File ${fileNameOrLocalStorageOrData} does not exist`);
-                }
-                else {
+                } else if (checkIfFileOrLocalStorageExists) {
+                    throw new Error(
+                        `File ${fileNameOrLocalStorageOrData} does not exist`
+                    );
+                } else {
                     // File doesn't exist and checkIfFileOrLocalStorageExists is set to false.
                     // Therefore open a database without importing an existing file.
                     // File will be written on first write operation.
                     return this.createDatabaseConnectionWithImport();
                 }
-            } 
-            else {
+            } else {
                 // browser
                 // fileNameOrLocalStorageOrData should be a local storage / indexedDB key
                 let localStorageContent = null;
                 if (this.options.useLocalForage) {
                     if (window.localforage) {
-                        localStorageContent = await window.localforage.getItem(fileNameOrLocalStorageOrData);
+                        localStorageContent = await window.localforage.getItem(
+                            fileNameOrLocalStorageOrData
+                        );
                     } else {
-                        throw new Error(`localforage is not defined - please import localforage.js into your site`);
+                        throw new Error(
+                            `localforage is not defined - please import localforage.js into your site`
+                        );
                     }
                 } else {
-                    localStorageContent = PlatformTools.getGlobalVariable().localStorage.getItem(fileNameOrLocalStorageOrData);
+                    localStorageContent = PlatformTools.getGlobalVariable().localStorage.getItem(
+                        fileNameOrLocalStorageOrData
+                    );
                 }
-                
+
                 if (localStorageContent != null) {
                     // localStorage value exists.
-                    return this.createDatabaseConnectionWithImport(JSON.parse(localStorageContent));
-                }
-                else if (checkIfFileOrLocalStorageExists) {
-                    throw new Error(`File ${fileNameOrLocalStorageOrData} does not exist`);
-                }
-                else {
+                    return this.createDatabaseConnectionWithImport(
+                        JSON.parse(localStorageContent)
+                    );
+                } else if (checkIfFileOrLocalStorageExists) {
+                    throw new Error(
+                        `File ${fileNameOrLocalStorageOrData} does not exist`
+                    );
+                } else {
                     // localStorage value doesn't exist and checkIfFileOrLocalStorageExists is set to false.
                     // Therefore open a database without importing anything.
                     // localStorage value will be written on first write operation.
                     return this.createDatabaseConnectionWithImport();
                 }
             }
-        }
-        else {
-            return this.createDatabaseConnectionWithImport(fileNameOrLocalStorageOrData);
+        } else {
+            return this.createDatabaseConnectionWithImport(
+                fileNameOrLocalStorageOrData
+            );
         }
     }
 
@@ -141,14 +155,15 @@ export class SqljsDriver extends AbstractSqliteDriver {
      */
     async save(location?: string) {
         if (!location && !this.options.location) {
-            throw new Error(`No location is set, specify a location parameter or add the location option to your configuration`);
+            throw new Error(
+                `No location is set, specify a location parameter or add the location option to your configuration`
+            );
         }
-        
+
         let path = "";
         if (location) {
             path = location;
-        }
-        else if (this.options.location) {
+        } else if (this.options.location) {
             path = this.options.location;
         }
 
@@ -156,23 +171,29 @@ export class SqljsDriver extends AbstractSqliteDriver {
             try {
                 const content = new Buffer(this.databaseConnection.export());
                 await PlatformTools.writeFile(path, content);
-            }
-            catch (e) {
+            } catch (e) {
                 throw new Error(`Could not save database, error: ${e}`);
             }
-        }
-        else {
+        } else {
             const database: Uint8Array = this.databaseConnection.export();
             // convert Uint8Array to number array to improve local-storage storage
             const databaseArray = [].slice.call(database);
             if (this.options.useLocalForage) {
                 if (window.localforage) {
-                    await window.localforage.setItem(path, JSON.stringify(databaseArray));
+                    await window.localforage.setItem(
+                        path,
+                        JSON.stringify(databaseArray)
+                    );
                 } else {
-                    throw new Error(`localforage is not defined - please import localforage.js into your site`);
+                    throw new Error(
+                        `localforage is not defined - please import localforage.js into your site`
+                    );
                 }
             } else {
-                PlatformTools.getGlobalVariable().localStorage.setItem(path, JSON.stringify(databaseArray));
+                PlatformTools.getGlobalVariable().localStorage.setItem(
+                    path,
+                    JSON.stringify(databaseArray)
+                );
             }
         }
     }
@@ -187,13 +208,12 @@ export class SqljsDriver extends AbstractSqliteDriver {
         if (this.options.autoSave) {
             if (this.options.autoSaveCallback) {
                 await this.options.autoSaveCallback(this.export());
-            }
-            else {
+            } else {
                 await this.save();
             }
         }
     }
-    
+
     /**
      * Returns the current database as Uint8Array.
      */
@@ -205,22 +225,32 @@ export class SqljsDriver extends AbstractSqliteDriver {
      * Creates generated map of values generated or returned by database after INSERT query.
      */
     createGeneratedMap(metadata: EntityMetadata, insertResult: any) {
-        const generatedMap = metadata.generatedColumns.reduce((map, generatedColumn) => {
-            // seems to be the only way to get the inserted id, see https://github.com/kripken/sql.js/issues/77
-            if (generatedColumn.isPrimary && generatedColumn.generationStrategy === "increment") {
-                const query = "SELECT last_insert_rowid()";
-                try {
-                    let result = this.databaseConnection.exec(query);
-                    this.connection.logger.logQuery(query);
-                    return OrmUtils.mergeDeep(map, generatedColumn.createValueMap(result[0].values[0][0]));
+        const generatedMap = metadata.generatedColumns.reduce(
+            (map, generatedColumn) => {
+                // seems to be the only way to get the inserted id, see https://github.com/kripken/sql.js/issues/77
+                if (
+                    generatedColumn.isPrimary &&
+                    generatedColumn.generationStrategy === "increment"
+                ) {
+                    const query = "SELECT last_insert_rowid()";
+                    try {
+                        const result = this.databaseConnection.exec(query);
+                        this.connection.logger.logQuery(query);
+                        return OrmUtils.mergeDeep(
+                            map,
+                            generatedColumn.createValueMap(
+                                result[0].values[0][0]
+                            )
+                        );
+                    } catch (e) {
+                        this.connection.logger.logQueryError(e, query, []);
+                    }
                 }
-                catch (e) {
-                    this.connection.logger.logQueryError(e, query, []);
-                }
-            }
 
-            return map;
-        }, {} as ObjectLiteral);
+                return map;
+            },
+            {} as ObjectLiteral
+        );
 
         return Object.keys(generatedMap).length > 0 ? generatedMap : undefined;
     }
@@ -245,14 +275,17 @@ export class SqljsDriver extends AbstractSqliteDriver {
      * Creates connection with an optional database.
      * If database is specified it is loaded, otherwise a new empty database is created.
      */
-    protected async createDatabaseConnectionWithImport(database?: Uint8Array): Promise<any> {
+    protected async createDatabaseConnectionWithImport(
+        database?: Uint8Array
+    ): Promise<any> {
         // sql.js < 1.0 exposes an object with a `Database` method.
         const isLegacyVersion = typeof this.sqlite.Database === "function";
-        const sqlite = isLegacyVersion ? this.sqlite : await this.sqlite(this.options.sqlJsConfig);
+        const sqlite = isLegacyVersion
+            ? this.sqlite
+            : await this.sqlite(this.options.sqlJsConfig);
         if (database && database.length > 0) {
             this.databaseConnection = new sqlite.Database(database);
-        }
-        else {
+        } else {
             this.databaseConnection = new sqlite.Database();
         }
 
@@ -261,8 +294,7 @@ export class SqljsDriver extends AbstractSqliteDriver {
             try {
                 this.databaseConnection.exec(`PRAGMA foreign_keys = ON;`);
                 ok(this.databaseConnection);
-            }
-            catch (e) {
+            } catch (e) {
                 fail(e);
             }
         });
@@ -274,11 +306,9 @@ export class SqljsDriver extends AbstractSqliteDriver {
     protected loadDependencies(): void {
         if (PlatformTools.type === "browser") {
             this.sqlite = window.SQL;
-        }
-        else {
+        } else {
             try {
                 this.sqlite = PlatformTools.load("sql.js");
-
             } catch (e) {
                 throw new DriverPackageNotInstalledError("sql.js", "sql.js");
             }
